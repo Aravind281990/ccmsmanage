@@ -102,8 +102,6 @@ public class AccessLogFilter implements Filter {
 		    (referer != null ? referer : "N/A")       // Handle null values for Referer
 		);
 
-		// Log to console (optional)
-		// logger.info(logMessageJson);
 
 		// Send the log message to Kafka
 		accessLogKafkaProducer.sendLog(logMessageJson);

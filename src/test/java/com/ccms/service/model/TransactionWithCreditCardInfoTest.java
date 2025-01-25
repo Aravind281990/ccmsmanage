@@ -164,8 +164,7 @@ class TransactionWithCreditCardInfoTest {
         String result = tx.toString();
 
         // Assert
-        assertTrue(result.contains("creditCardNumber=1234567812345678"), "The toString() method should include the credit card number");
-//        assertTrue(result.contains("transactionDetail=TransactionDetail(transactionId=1001"), "The toString() method should include transaction details");
+        assertTrue(result.contains("creditCardNumber=1234567812345678"), "The toString() method should include the credit card number");     
     }
     
     @Test

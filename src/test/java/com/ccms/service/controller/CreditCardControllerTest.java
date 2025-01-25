@@ -75,22 +75,6 @@ public class CreditCardControllerTest {
                 .andExpect(jsonPath("$.status").value("Active"));
     }
 
-//     //Test for adding a new credit card - Bad Request scenario (null input)
-//    @Test
-//    public void testAddCreditCard_BadRequest() throws Exception {
-//        String encodedUsername = "encodedUser123";
-//        String username = "user123";
-//        CreditCard.CreditCardDetail creditCardDetail = null; // Simulating invalid input
-//
-//        when(decodename.decodeUsername(encodedUsername)).thenReturn(username);
-//
-//        mockMvc.perform(post("/api/customer/creditcard/addcreditcard/{username}", encodedUsername)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{}"))
-//               .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.message").value("Bad Request"))
-//                .andExpect(jsonPath("$.details").value("Credit card details cannot be null"));
-//    }
 
     // Test for adding a duplicate credit card
     @Test
@@ -110,7 +94,6 @@ public class CreditCardControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{ \"creditCardId\": 123, \"creditCardNumber\": \"1234-5678-9876-5432\", \"expiryMonth\": 12, \"expiryYear\": 2025, \"cvv\": 123, \"wireTransactionVendor\": \"Visa\", \"status\": \"Active\" }"))
                 .andExpect(status().isBadRequest())
-    //            .andExpect(jsonPath("$.message").value("Duplicate credit card found"))
                 .andExpect(jsonPath("$.details").value("Card already exists"));
     }
 
@@ -173,7 +156,6 @@ public class CreditCardControllerTest {
         mockMvc.perform(get("/api/customer/creditcard/listcreditcards/{username}", encodedUsername)
                 .param("showFullNumber", String.valueOf(showFullNumber)))
             .andExpect(status().isNotFound());
- //           .andExpect(jsonPath("$.message").value("No credit cards found for user: user123"));
     }
     
     @Test
@@ -186,7 +168,7 @@ public class CreditCardControllerTest {
 
         mockMvc.perform(put("/api/customer/creditcard/togglecreditcard/{username}/{creditCardId}/toggle", encodedUsername, creditCardId))
             .andExpect(status().isNotFound());
- //           .andExpect(jsonPath("$.message").value("Credit card status not toggled -> ID : 999 was not found for user: user123"));
+ 
     }
     
     
@@ -215,23 +197,6 @@ public class CreditCardControllerTest {
                 .andExpect(jsonPath("$.wireTransactionVendor").value("Visa"))
                 .andExpect(jsonPath("$.status").value("Active"));
     }
-
-//    @Test
-//    public void testAddCreditCard_BadRequest1() throws Exception {
-//        String encodedUsername = "encodedUser123";
-//        String username = "user123";
-//        CreditCard.CreditCardDetail creditCardDetail = null; // Invalid input
-//
-//        when(decodename.decodeUsername(encodedUsername)).thenReturn(username);
-//
-//        mockMvc.perform(post("/api/customer/creditcard/addcreditcard/{username}", encodedUsername)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{}"))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.message").value("Bad Request"))
-//                .andExpect(jsonPath("$.details").value("Credit card details cannot be null"));
-//    }
-
     
     @Test
     public void testToggleCreditCardStatus_Success1() throws Exception {
@@ -280,7 +245,6 @@ public class CreditCardControllerTest {
 
         mockMvc.perform(put("/api/customer/creditcard/togglecreditcard/{username}/{creditCardId}/toggle", encodedUsername, creditCardId))
                 .andExpect(status().isNotFound());
-           //     .andExpect(jsonPath("$.message").value("Credit card status not toggled -> ID : 999 was not found for user: user123"));
     }
 
     
@@ -322,7 +286,7 @@ public class CreditCardControllerTest {
         mockMvc.perform(get("/api/customer/creditcard/listcreditcards/{username}", encodedUsername)
                 .param("showFullNumber", String.valueOf(showFullNumber)))
             .andExpect(status().isNotFound());
-         //   .andExpect(jsonPath("$.message").value("No credit cards found for user: user123"));
+  
     }
 
     

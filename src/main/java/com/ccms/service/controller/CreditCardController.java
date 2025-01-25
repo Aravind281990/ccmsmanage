@@ -164,7 +164,7 @@ public class CreditCardController {
 			CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username,
 					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);
 
-			return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());
+			return createErrorResponse(HttpStatus.BAD_REQUEST, BAD_REQUEST, ex.getMessage());
 		}
 
 		catch (DuplicateCreditCardException ex) {

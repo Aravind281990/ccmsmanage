@@ -15,6 +15,7 @@ import com.ccms.service.exception.CreditCardNotFoundException;
 import com.ccms.service.exception.CreditCardProcessingException;
 import com.ccms.service.exception.CustomerNotFoundException;
 import com.ccms.service.exception.DuplicateCreditCardException;
+import com.ccms.service.exception.InvalidRandomOperationException;
 import com.ccms.service.model.CreditCard;
 import com.ccms.service.model.CreditCard.CreditCardDetail;
 import com.ccms.service.model.Customer;
@@ -148,8 +149,18 @@ public class CreditCardServiceImpl implements CreditCardService {
 		// set)
 
 		if (creditCardDetail.getCreditCardId() == 0) { // assuming int type, adjust as per your design
+			
 			Random random = new Random();
-			creditCardDetail.setCreditCardId(random.nextInt(1000000)); // You can adjust the range or use UUID
+
+			int generatedId = random.nextInt(999999) + 1; 
+			
+		     // If for some reason the ID is still invalid, throw an InvalidRandomOperationException
+			
+            if (generatedId <= 0) {
+                throw new InvalidRandomOperationException("Generated random ID is invalid: " + generatedId);
+            }
+            
+            creditCardDetail.setCreditCardId(generatedId); // You can adjust the range or use UUID
 		}
 
 		try {

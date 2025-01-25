@@ -347,7 +347,7 @@ class TransactionTest {
 
         // Assert
         assertTrue(result.contains("creditCardId=123"), "The toString() method should include the creditCardId");
-        //assertTrue(result.contains("transactions=[TransactionDetail(transactionId=1001"), "The toString() method should include transaction details");
+       
     }
 
     
