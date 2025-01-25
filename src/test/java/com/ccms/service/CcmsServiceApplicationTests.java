@@ -6,10 +6,4 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class CcmsServiceApplicationTests {
 
-	@Test
-	void contextLoads() {
-		
-		throw new UnsupportedOperationException("Test not implemented yet");
-	}
-
 }

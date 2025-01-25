@@ -57,7 +57,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 	private static final String NOT_FOUND = &quot;Not Found&quot;;
 	private static final String INTERNAL_SERVER_ERROR = &quot;Internal Server Error&quot;;
 	private static final String BAD_REQUEST = &quot;Bad Request&quot;;
-<span class="fc" id="L60">	private static final String FAILURE =&quot;failure&quot;;</span>
+	private static final String FAILURE =&quot;failure&quot;;
 
 	
 	@Autowired
@@ -101,7 +101,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 <span class="fc bfc" id="L102" title="All 2 branches covered.">			if (creditCards == null) {</span>
 <span class="fc" id="L103">				return createErrorResponse(HttpStatus.NOT_FOUND, NOT_FOUND,</span>
-<span class="fc" id="L104">						&quot;No credit cards found for user: &quot; + username);</span>
+						&quot;No credit cards found for user: &quot; + username);
 			}
 
 <span class="fc" id="L107">			return ResponseEntity.ok(creditCards);</span>
@@ -110,7 +110,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 <span class="nc" id="L110">			logger.error(&quot;An error occurred while fetching the credit cards&quot;, e);</span>
 
 <span class="nc" id="L112">			return createErrorResponse(HttpStatus.NOT_FOUND, NOT_FOUND,</span>
-<span class="nc" id="L113">					&quot;No credit cards found for user: &quot; + username);</span>
+					&quot;No credit cards found for user: &quot; + username);
 
 		}
 
@@ -164,7 +164,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 <span class="nc" id="L164">			CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username,</span>
 <span class="nc" id="L165">					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);</span>
 
-<span class="nc" id="L167">			return createErrorResponse(HttpStatus.BAD_REQUEST, &quot;Bad Request&quot;, ex.getMessage());</span>
+<span class="nc" id="L167">			return createErrorResponse(HttpStatus.BAD_REQUEST, BAD_REQUEST, ex.getMessage());</span>
 		}
 
 <span class="fc" id="L170">		catch (DuplicateCreditCardException ex) {</span>
@@ -192,7 +192,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 <span class="nc" id="L192">					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);</span>
 
 <span class="nc" id="L194">			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR,</span>
-<span class="nc" id="L195">					&quot;An unexpected error occurred&quot;);</span>
+					&quot;An unexpected error occurred&quot;);
 		}
 	}
 
@@ -221,10 +221,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 <span class="fc bfc" id="L221" title="All 2 branches covered.">			if (!statusUpdated) {</span>
 
 <span class="fc" id="L223">				String message = &quot;Credit card status not toggled -&gt; ID : &quot; + creditCardId + &quot; was not found for user: &quot;</span>
-<span class="fc" id="L224">						+ username;</span>
+						+ username;
 
 <span class="fc" id="L226">				CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username, creditCardId,</span>
-<span class="fc" id="L227">						creditCardKafkaProducer);</span>
+						creditCardKafkaProducer);
 
 <span class="fc" id="L229">				return createErrorResponse(HttpStatus.NOT_FOUND, NOT_FOUND, message);</span>
 
@@ -233,17 +233,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 <span class="fc" id="L233">			String message = &quot;Credit card status toggled successfully&quot;;</span>
 
 <span class="fc" id="L235">			CreditCardLogUtil.logCreditCard(jsonLogMap, &quot;success&quot;, message, username, creditCardId,</span>
-<span class="fc" id="L236">					creditCardKafkaProducer);</span>
+					creditCardKafkaProducer);
 
 <span class="fc" id="L238">			return ResponseEntity.ok(message);</span>
 
 <span class="nc" id="L240">		} catch (CreditCardNotFoundException ex) {</span>
 
 <span class="nc" id="L242">			String message = &quot;Credit card status not toggled -&gt; ID : &quot; + creditCardId + &quot; was not found for user: &quot;</span>
-<span class="nc" id="L243">					+ username;</span>
+					+ username;
 
 <span class="nc" id="L245">			CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username, creditCardId,</span>
-<span class="nc" id="L246">					creditCardKafkaProducer);</span>
+					creditCardKafkaProducer);
 
 <span class="nc" id="L248">			return createErrorResponse(HttpStatus.NOT_FOUND, NOT_FOUND, message);</span>
 		}

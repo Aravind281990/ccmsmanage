@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.ccms.service.CcmsServiceApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.738 s - in com.ccms.service.CcmsServiceApplicationTests
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 5.858 s <<< FAILURE! - in com.ccms.service.CcmsServiceApplicationTests
+com.ccms.service.CcmsServiceApplicationTests.contextLoads  Time elapsed: 0.01 s  <<< ERROR!
+java.lang.UnsupportedOperationException: Test not implemented yet
+	at com.ccms.service.CcmsServiceApplicationTests.contextLoads(CcmsServiceApplicationTests.java:12)
+
