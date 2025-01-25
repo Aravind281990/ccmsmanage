@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.exception</a> &gt; <span class="el_source">GlobalExceptionHandler.java</span></div><h1>GlobalExceptionHandler.java</h1><pre class="source lang-java linenums">package com.ccms.service.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.ccms.service.utilities.ErrorResponse;
+
+/**
+ * GlobalExceptionHandler is responsible for handling exceptions thrown by the
+ * application. It catches specific exceptions like InvalidUsernameException and
+ * DuplicateCreditCardException, and returns custom error responses with
+ * appropriate HTTP status codes.
+ * &lt;p&gt;
+ * The class uses @RestControllerAdvice to handle exceptions globally and
+ * ensures that all API responses follow a consistent format.
+ * &lt;/p&gt;
+ */
+
+@RestControllerAdvice
+<span class="fc" id="L22">public class GlobalExceptionHandler {</span>
+
+	/**
+	 * Handles InvalidUsernameException and returns a custom error response with a
+	 * 400 Bad Request status.
+	 * 
+	 * @param ex The InvalidUsernameException thrown by the application.
+	 * @return A ResponseEntity containing an ErrorResponse object with error
+	 *         details and a 400 status.
+	 */
+
+	@ExceptionHandler(InvalidUsernameException.class)
+	public ResponseEntity&lt;ErrorResponse&gt; handleInvalidUsernameException(InvalidUsernameException ex) {
+		// Log the error or any additional processing
+		// Return a custom error response
+<span class="nc" id="L37">		ErrorResponse errorResponse = new ErrorResponse(&quot;Invalid username&quot;, ex.getMessage());</span>
+<span class="nc" id="L38">		return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.BAD_REQUEST);</span>
+	}
+
+	/**
+	 * Handles DuplicateCreditCardException and returns a custom error response with
+	 * a 400 Bad Request status.
+	 * 
+	 * @param ex The DuplicateCreditCardException thrown by the application.
+	 * @return A ResponseEntity containing an ErrorResponse object with error
+	 *         details and a 400 status.
+	 */
+
+	@ExceptionHandler(DuplicateCreditCardException.class)
+	public ResponseEntity&lt;ErrorResponse&gt; handleDuplicateCreditCardException(DuplicateCreditCardException ex) {
+		// Log the error or any additional processing
+		// Return a custom error response
+<span class="fc" id="L54">		ErrorResponse errorResponse = new ErrorResponse(&quot;Credit card already associated with this user&quot;,</span>
+<span class="fc" id="L55">				ex.getMessage());</span>
+<span class="fc" id="L56">		return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.BAD_REQUEST);</span>
+	}
+
+	/**
+	 * Global exception handler for any unhandled exceptions that may occur in the
+	 * application. This method provides a generic error response for all unexpected
+	 * errors.
+	 * 
+	 * @param ex The Exception thrown by the application.
+	 * @return A ResponseEntity containing an ErrorResponse object with a generic
+	 *         error message and a 500 status.
+	 */
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity&lt;ErrorResponse&gt; handleGlobalException(Exception ex) {
+
+		// Create a custom error response
+<span class="fc" id="L73">		ErrorResponse errorResponse = new ErrorResponse(&quot;Internal Server Error&quot;, &quot;An unexpected error occurred&quot;);</span>
+
+		// Return the error response with a 500 Internal Server Error status
+<span class="fc" id="L76">		return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

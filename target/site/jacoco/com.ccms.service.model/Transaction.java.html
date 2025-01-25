@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Transaction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.model</a> &gt; <span class="el_source">Transaction.java</span></div><h1>Transaction.java</h1><pre class="source lang-java linenums">package com.ccms.service.model;
+
+import java.util.List;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * Represents a Transaction entity.
+ * &lt;p&gt;
+ * This class holds information about a customer's credit card transactions. It
+ * stores the transaction details associated with the credit card, including the
+ * transaction date, amount, type, and description.
+ * &lt;/p&gt;
+ * 
+ * The document is stored in the MongoDB collection named &quot;Transactions&quot;.
+ */
+
+<span class="fc" id="L23">@NoArgsConstructor</span>
+<span class="fc" id="L24">@AllArgsConstructor</span>
+<span class="pc bpc" id="L25" title="16 of 30 branches missed.">@Data</span>
+
+@Document(collection = &quot;Transactions&quot;)
+public class Transaction {
+
+	@Id
+<span class="fc" id="L31">	public String id;</span>
+<span class="fc" id="L32">	public String username;</span>
+<span class="fc" id="L33">	public List&lt;CreditCardTransaction&gt; creditcards;</span>
+
+	/**
+	 * Inner class representing credit card transaction data.
+	 * &lt;p&gt;
+	 * Each credit card transaction includes a list of detailed transactions, which
+	 * specify the type, amount, and date of each transaction.
+	 * &lt;/p&gt;
+	 */
+
+<span class="fc" id="L43">	@NoArgsConstructor</span>
+<span class="fc" id="L44">	@AllArgsConstructor</span>
+<span class="pc bpc" id="L45" title="8 of 16 branches missed.">	@Data</span>
+	public static class CreditCardTransaction {
+
+<span class="fc" id="L48">		public int creditCardId;</span>
+<span class="fc" id="L49">		public List&lt;TransactionDetail&gt; transactions;</span>
+
+	}
+
+	/**
+	 * Inner class representing the details of a specific transaction.
+	 * &lt;p&gt;
+	 * Each transaction detail includes information about the transaction's amount,
+	 * type (credit/debit), description, date, and time.
+	 * &lt;/p&gt;
+	 */
+
+<span class="fc" id="L61">	@NoArgsConstructor</span>
+<span class="fc" id="L62">	@AllArgsConstructor</span>
+<span class="pc bpc" id="L63" title="23 of 42 branches missed.">	@Data</span>
+	public static class TransactionDetail {
+
+<span class="fc" id="L66">		public long transactionId;</span>
+<span class="fc" id="L67">		public String transactionDate;</span>
+<span class="fc" id="L68">		public String transactionTime;</span>
+<span class="fc" id="L69">		public String transactionType; // cr or db</span>
+<span class="fc" id="L70">		public double transactionAmount;</span>
+<span class="fc" id="L71">		public String transactionDesc;</span>
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

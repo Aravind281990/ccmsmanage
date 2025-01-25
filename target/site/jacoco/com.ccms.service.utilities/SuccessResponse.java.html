@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SuccessResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.utilities</a> &gt; <span class="el_source">SuccessResponse.java</span></div><h1>SuccessResponse.java</h1><pre class="source lang-java linenums">package com.ccms.service.utilities;
+
+/**
+ * A generic class that represents a standard structure for a successful API response.
+ * &lt;p&gt;
+ * This class is designed to wrap the response data along with a fixed status field (&quot;success&quot;).
+ * It can be used to return any type of data from a service or API endpoint in a consistent format.
+ * &lt;/p&gt;
+ * 
+ * @param &lt;T&gt; the type of data being returned in the response
+ * @since 1.0
+ */
+
+public class SuccessResponse&lt;T&gt; {
+    
+<span class="fc" id="L16">	private String status = &quot;success&quot;;</span>
+    
+	private T data;
+
+<span class="fc" id="L20">    public SuccessResponse(T data) {</span>
+<span class="fc" id="L21">        this.data = data;</span>
+<span class="fc" id="L22">    }</span>
+
+	public String getStatus() {
+<span class="fc" id="L25">		return status;</span>
+	}
+
+	public void setStatus(String status) {
+<span class="nc" id="L29">		this.status = status;</span>
+<span class="nc" id="L30">	}</span>
+
+	public T getData() {
+<span class="fc" id="L33">		return data;</span>
+	}
+
+	public void setData(T data) {
+<span class="nc" id="L37">		this.data = data;</span>
+<span class="nc" id="L38">	}</span>
+
+	@Override
+	public String toString() {
+<span class="fc" id="L42">		return &quot;SuccessResponse [status=&quot; + status + &quot;, data=&quot; + data + &quot;]&quot;;</span>
+	}
+ 
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

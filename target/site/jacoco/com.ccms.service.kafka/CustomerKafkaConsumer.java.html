@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomerKafkaConsumer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.kafka</a> &gt; <span class="el_source">CustomerKafkaConsumer.java</span></div><h1>CustomerKafkaConsumer.java</h1><pre class="source lang-java linenums">package com.ccms.service.kafka;
+
+import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
+
+/**
+ * Kafka consumer service for processing customer logs from the Kafka topic.
+ * &lt;p&gt;
+ * This service listens to the &quot;customer-log-topic&quot; Kafka topic and processes
+ * messages related to customer events or logs. The messages may represent
+ * customer-related actions or data that should be processed, stored, or further
+ * acted upon within the application.
+ * &lt;/p&gt;
+ */
+
+@Service
+@EnableKafka
+<span class="fc" id="L19">public class CustomerKafkaConsumer {</span>
+
+	/**
+	 * Listens for messages from the &quot;customer-log-topic&quot; Kafka topic and processes
+	 * them.
+	 * &lt;p&gt;
+	 * This method listens to customer-related logs or events that are sent to the
+	 * Kafka topic and processes them accordingly. Typically, this could involve
+	 * actions like persisting customer data or triggering further application logic
+	 * based on the received log data.
+	 * &lt;/p&gt;
+	 *
+	 * @param message The message received from the Kafka topic, typically a log or
+	 *                event related to a customer.
+	 */
+
+	@KafkaListener(topics = &quot;customer-log-topic&quot;, groupId = &quot;credit-card-consumer-group&quot;)
+	public void listenCustomerLogs(String message) {
+
+		// Log or process the customer-related message (e.g., saving to a database)
+
+<span class="nc" id="L40">		System.out.println(&quot;Received customer logs: &quot; + message);</span>
+<span class="nc" id="L41">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

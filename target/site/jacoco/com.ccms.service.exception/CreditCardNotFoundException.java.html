@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreditCardNotFoundException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.exception</a> &gt; <span class="el_source">CreditCardNotFoundException.java</span></div><h1>CreditCardNotFoundException.java</h1><pre class="source lang-java linenums">package com.ccms.service.exception;
+
+/**
+ * Custom exception class to indicate that no credit card was found for a
+ * specific username. This exception is a RuntimeException and is typically used
+ * in the service layer when a credit card cannot be retrieved based on the
+ * provided username.
+ */
+
+public class CreditCardNotFoundException extends RuntimeException {
+
+	/**
+	 * Constructor that accepts a username and constructs an error message
+	 * indicating that no credit card was found for the specified username.
+	 *
+	 * @param username The username for which no credit card was found.
+	 */
+
+	public CreditCardNotFoundException(String username) {
+<span class="fc" id="L20">		super(&quot;No credit card found for username: &quot; + username);</span>
+<span class="fc" id="L21">	}</span>
+
+	/**
+	 * Constructor that accepts a custom message to allow more flexibility in the
+	 * error description.
+	 * 
+	 * @param message The custom error message.
+	 */
+	public CreditCardNotFoundException(String message, Throwable cause) {
+<span class="fc" id="L30">		super(message, cause);</span>
+
+<span class="fc" id="L32">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

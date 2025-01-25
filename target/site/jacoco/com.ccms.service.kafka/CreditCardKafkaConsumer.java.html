@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreditCardKafkaConsumer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.kafka</a> &gt; <span class="el_source">CreditCardKafkaConsumer.java</span></div><h1>CreditCardKafkaConsumer.java</h1><pre class="source lang-java linenums">package com.ccms.service.kafka;
+
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
+
+/**
+ * Kafka consumer service for processing credit card logs.
+ * &lt;p&gt;
+ * This service listens to the Kafka topic &quot;creditcard-log-topic&quot; and processes the incoming messages.
+ * The messages could represent events related to credit card transactions or actions performed on a credit card.
+ * &lt;/p&gt;
+ */
+
+@Service
+<span class="fc" id="L15">public class CreditCardKafkaConsumer {</span>
+
+	 /**
+     * Kafka listener that listens for messages on the &quot;creditcard-log-topic&quot; topic.
+     * The consumer group is &quot;credit-card-consumer-group&quot;.
+     * &lt;p&gt;
+     * The messages from this topic are typically related to credit card transactions, 
+     * customer actions, or any events involving credit cards.
+     * &lt;/p&gt;
+     * 
+     * @param message The message received from the Kafka topic. This is typically a log or event 
+     *                that needs to be processed (e.g., saved to a database or further analyzed).
+     */
+	
+    @KafkaListener(topics = &quot;creditcard-log-topic&quot;, groupId = &quot;credit-card-consumer-group&quot;)
+    public void listenCreditCardLogs(String message) {
+       
+        // Log or process the incoming credit card log message
+        // For example, you could persist this data to a database
+    	
+<span class="nc" id="L35">        System.out.println(&quot;Received creditcard logs: &quot; + message);</span>
+<span class="nc" id="L36">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

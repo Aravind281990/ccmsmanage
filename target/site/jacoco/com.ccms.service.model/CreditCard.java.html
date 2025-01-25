@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreditCard.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.model</a> &gt; <span class="el_source">CreditCard.java</span></div><h1>CreditCard.java</h1><pre class="source lang-java linenums">package com.ccms.service.model;
+
+import java.util.List;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+/**
+ * Represents a CreditCard entity.
+ * &lt;p&gt;
+ * This class holds information about a credit card for a specific user. It
+ * contains the user-related details (like username and name on the card), and a
+ * list of credit card details (such as credit card number, expiry date, CVV,
+ * etc.).
+ * &lt;/p&gt;
+ * 
+ * The document is stored in the MongoDB collection &quot;CreditCard&quot;.
+ */
+
+<span class="fc" id="L28">@NoArgsConstructor</span>
+<span class="fc" id="L29">@AllArgsConstructor</span>
+<span class="pc bpc" id="L30" title="20 of 38 branches missed.">@Data</span>
+@Document(collection = &quot;CreditCard&quot;)
+public class CreditCard {
+
+	@Id
+<span class="fc" id="L35">	public String id;</span>
+<span class="fc" id="L36">	public String username;</span>
+<span class="fc" id="L37">	public String nameOnTheCard;</span>
+<span class="fc" id="L38">	public List&lt;CreditCardDetail&gt; creditcards;</span>
+
+	/**
+	 * Inner class representing the detailed information of a specific credit card.
+	 * &lt;p&gt;
+	 * This contains attributes like the credit card number, expiry date, CVV,
+	 * transaction vendor, and the status of the credit card.
+	 * &lt;/p&gt;
+	 */
+
+<span class="fc" id="L48">	@NoArgsConstructor</span>
+<span class="fc" id="L49">	@AllArgsConstructor</span>
+<span class="pc bpc" id="L50" title="22 of 38 branches missed.">	@Data</span>
+	public static class CreditCardDetail {
+
+		// @JsonIgnore
+		@Schema(hidden = true)
+<span class="fc" id="L55">		public int creditCardId;</span>
+<span class="fc" id="L56">		public String creditCardNumber;</span>
+<span class="fc" id="L57">		public int expiryMonth;</span>
+<span class="fc" id="L58">		public int expiryYear;</span>
+<span class="fc" id="L59">		public int cvv;</span>
+<span class="fc" id="L60">		public String wireTransactionVendor;</span>
+<span class="fc" id="L61">		public String status;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreditCardEnDecryption.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.utilities</a> &gt; <span class="el_source">CreditCardEnDecryption.java</span></div><h1>CreditCardEnDecryption.java</h1><pre class="source lang-java linenums">package com.ccms.service.utilities;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.security.SecureRandom;
+import java.util.Base64;
+
+/**
+ * A utility class to encrypt and decrypt credit card numbers using AES encryption.
+ * &lt;p&gt;
+ * This class provides methods to securely encrypt and decrypt credit card numbers using
+ * the AES algorithm in CBC mode with PKCS5 padding. The encryption key is retrieved
+ * from the application's configuration properties (via {@link Value} annotation), and the
+ * encryption is performed with a randomly generated Initialization Vector (IV) to ensure
+ * uniqueness for each encryption.
+ * &lt;/p&gt;
+ * 
+ * The class offers two main methods:
+ * &lt;ul&gt;
+ *     &lt;li&gt;{@link #encrypt(String)}: Encrypts the provided credit card number.&lt;/li&gt;
+ *     &lt;li&gt;{@link #decrypt(String)}: Decrypts the provided encrypted credit card number.&lt;/li&gt;
+ * &lt;/ul&gt;
+ * 
+ * @see javax.crypto.Cipher
+ * @see javax.crypto.SecretKey
+ * @see javax.crypto.KeyGenerator
+ */
+
+@Component
+<span class="fc" id="L35">public class CreditCardEnDecryption {</span>
+
+<span class="fc" id="L37">    private static final Logger logger = LoggerFactory.getLogger(CreditCardEnDecryption.class);</span>
+
+    // Inject the AES key from application.properties using @Value
+    @Value(&quot;${aes.key}&quot;)
+    private String constantKeyBase64;
+
+    public String encrypt(String creditCardNumber) throws Exception {
+<span class="fc" id="L44">        logger.info(&quot;Entering encryption method&quot;);</span>
+        try {
+            // Print the AES key for debugging (Make sure it's not null)
+<span class="fc" id="L47">            logger.info(&quot;AES Key: {}&quot;, constantKeyBase64);</span>
+
+            // Convert the fixed key from Base64 to bytes
+<span class="fc" id="L50">            byte[] decodedKey = Base64.getDecoder().decode(constantKeyBase64);</span>
+<span class="fc" id="L51">            SecretKey secretKey = new SecretKeySpec(decodedKey, &quot;AES&quot;);</span>
+
+            // Generate a random Initialization Vector (IV)
+<span class="fc" id="L54">            byte[] iv = new byte[16]; // AES block size is 16 bytes</span>
+<span class="fc" id="L55">            new SecureRandom().nextBytes(iv);</span>
+
+            // Create a Cipher instance for AES encryption (CBC mode with PKCS5 padding)
+<span class="fc" id="L58">            Cipher cipher = Cipher.getInstance(&quot;AES/CBC/PKCS5Padding&quot;);</span>
+<span class="fc" id="L59">            cipher.init(Cipher.ENCRYPT_MODE, secretKey, new javax.crypto.spec.IvParameterSpec(iv));  // Initialize the cipher for encryption</span>
+
+            // Convert the credit card number to bytes and encrypt
+<span class="fc" id="L62">            byte[] encryptedBytes = cipher.doFinal(creditCardNumber.getBytes());</span>
+
+            // Combine the IV and encrypted data
+<span class="fc" id="L65">            byte[] encryptedDataWithIV = new byte[iv.length + encryptedBytes.length];</span>
+<span class="fc" id="L66">            System.arraycopy(iv, 0, encryptedDataWithIV, 0, iv.length);</span>
+<span class="fc" id="L67">            System.arraycopy(encryptedBytes, 0, encryptedDataWithIV, iv.length, encryptedBytes.length);</span>
+
+            // Return the encrypted data as a Base64 encoded string
+<span class="fc" id="L70">            return Base64.getEncoder().encodeToString(encryptedDataWithIV);</span>
+<span class="nc" id="L71">        } catch (Exception ex) {</span>
+<span class="nc" id="L72">            logger.error(&quot;Error during encryption&quot;, ex);</span>
+<span class="nc" id="L73">            throw new Exception(&quot;Encryption failed&quot;, ex);</span>
+        }
+    }
+
+    // Decrypt the encrypted credit card number using AES
+    public String decrypt(String encryptedCreditCard) throws Exception {
+        try {
+<span class="fc" id="L80">            logger.info(&quot;Entering decryption method&quot;);</span>
+            // Print the AES key for debugging (Make sure it's not null)
+<span class="fc" id="L82">            logger.info(&quot;AES Key: {}&quot;, constantKeyBase64);</span>
+
+            // Decode the Base64 encoded ciphertext
+<span class="fc" id="L85">            byte[] encryptedDataWithIV = Base64.getDecoder().decode(encryptedCreditCard);</span>
+
+            // Extract the IV from the encrypted data
+<span class="fc" id="L88">            byte[] iv = new byte[16]; // AES block size is 16 bytes</span>
+<span class="fc" id="L89">            System.arraycopy(encryptedDataWithIV, 0, iv, 0, iv.length);</span>
+
+            // The remaining bytes are the encrypted data
+<span class="fc" id="L92">            byte[] encryptedData = new byte[encryptedDataWithIV.length - iv.length];</span>
+<span class="fc" id="L93">            System.arraycopy(encryptedDataWithIV, iv.length, encryptedData, 0, encryptedData.length);</span>
+
+            // Convert the fixed key from Base64 to bytes
+<span class="fc" id="L96">            byte[] decodedKey = Base64.getDecoder().decode(constantKeyBase64);</span>
+<span class="fc" id="L97">            SecretKey secretKey = new SecretKeySpec(decodedKey, &quot;AES&quot;);</span>
+
+            // Create a Cipher instance for AES DEcryption (CBC mode with PKCS5 padding)
+<span class="fc" id="L100">            Cipher cipher = Cipher.getInstance(&quot;AES/CBC/PKCS5Padding&quot;);</span>
+<span class="fc" id="L101">            cipher.init(Cipher.DECRYPT_MODE, secretKey, new javax.crypto.spec.IvParameterSpec(iv));  // Initialize the cipher for decryption</span>
+
+            // Decrypt the ciphertext
+<span class="fc" id="L104">            byte[] decryptedBytes = cipher.doFinal(encryptedData);</span>
+
+            // Return the decrypted data as a string
+<span class="fc" id="L107">            return new String(decryptedBytes);</span>
+<span class="fc" id="L108">        } catch (Exception ex) {</span>
+<span class="fc" id="L109">            logger.error(&quot;Error during decryption&quot;, ex);</span>
+<span class="fc" id="L110">            throw new Exception(&quot;Decryption failed&quot;, ex);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

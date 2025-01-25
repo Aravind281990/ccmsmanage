@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AccessLogKafkaProducer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.kafka</a> &gt; <span class="el_source">AccessLogKafkaProducer.java</span></div><h1>AccessLogKafkaProducer.java</h1><pre class="source lang-java linenums">package com.ccms.service.kafka;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+/**
+ * Service responsible for producing access logs and sending them to a Kafka topic.
+ * &lt;p&gt;
+ * This class uses the {@link KafkaTemplate} to send access logs to a Kafka topic named &quot;access-logs&quot;.
+ * It also contains a simple filtering mechanism to exclude logs containing the &quot;/actuator/prometheus&quot; path.
+ * &lt;/p&gt;
+ */
+
+@Service
+<span class="fc" id="L16">public class AccessLogKafkaProducer {</span>
+	
+	
+	/**
+     * The Kafka topic to which the access logs are sent.
+     * The logs are sent to this topic for further processing (e.g., consumption by other services).
+     */
+
+	private static final String ACCESSLOG_TOPIC = &quot;access-logs&quot;; // Kafka topic to send logs to
+
+    @Autowired
+    private KafkaTemplate&lt;String, String&gt; kafkaTemplate;
+    
+    
+    /**
+     * Sends the provided access log to the Kafka topic, excluding logs related to Prometheus.
+     * &lt;p&gt;
+     * The method checks if the log contains the string &quot;/actuator/prometheus&quot;, which is typically used
+     * for Prometheus metrics endpoints. If the log contains this string, it will be skipped and not sent
+     * to Kafka.
+     * &lt;/p&gt;
+     * 
+     * @param accesslogs The access log message to be sent. This log could contain information about 
+     *                   user actions, system events, or any other access-related data.
+     */
+
+	public void sendLog(String accesslogs) {
+		
+       
+		 // Skip logs containing &quot;/actuator/prometheus&quot;
+		
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        if (accesslogs.contains(&quot;/actuator/prometheus&quot;)) {</span>
+<span class="nc" id="L48">            return; // Skip this log</span>
+        }
+
+        // Send the valid log to Kafka
+        
+<span class="nc" id="L53">		kafkaTemplate.send(ACCESSLOG_TOPIC, accesslogs);</span>
+<span class="nc" id="L54">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

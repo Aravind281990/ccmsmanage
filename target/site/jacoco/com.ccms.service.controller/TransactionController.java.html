@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.controller</a> &gt; <span class="el_source">TransactionController.java</span></div><h1>TransactionController.java</h1><pre class="source lang-java linenums">package com.ccms.service.controller;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ccms.service.exception.InvalidUsernameFormatException;
+import com.ccms.service.model.Transaction.TransactionDetail;
+import com.ccms.service.model.TransactionWithCardId;
+import com.ccms.service.service.TransactionService;
+import com.ccms.service.utilities.Decodename;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+/**
+ * Controller responsible for managing credit card transactions related to
+ * customers. This includes fetching transaction history, expenses, and
+ * high-value transactions for a given customer.
+ */
+
+@Tag(name = &quot;Transaction Controller&quot;, description = &quot;Controller for managing Customers Creditcard Transactions&quot;)
+@RestController
+@Validated
+@RequestMapping(&quot;/api/customer/transactions&quot;)
+<span class="fc" id="L40">public class TransactionController {</span>
+
+<span class="fc" id="L42">	private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);</span>
+
+	@Autowired
+	TransactionService transactionService;
+
+	@Autowired
+	private Decodename decodename;
+
+	/**
+	 * Fetches all transactions for a given customer, including pagination details.
+	 * 
+	 * @param encodedusername The encoded username of the customer.
+	 * @param page            The page number to retrieve (optional, defaults to 0).
+	 * @param size            The number of transactions per page (optional,
+	 *                        defaults to 100).
+	 * @return A ResponseEntity containing the paginated list of transactions or an
+	 *         error response.
+	 */
+
+	@Operation(summary = &quot;Get all Transactions&quot;, description = &quot;Show all transactions for every card associated with the given customer&quot;)
+	@GetMapping(&quot;/{username}&quot;)
+	public ResponseEntity&lt;?&gt; gettransactionsforuser(@PathVariable(&quot;username&quot;) String encodedusername,
+			@RequestParam(required = false) Integer page, // No default value set
+			@RequestParam(required = false) Integer size) { // No default value set
+
+<span class="nc" id="L67">		String username = decodeUsername(encodedusername);</span>
+
+<span class="nc" id="L69">		logger.info(&quot;Fetching transactions for user: {}, page: {}, limit: {}&quot;, username, page, size);</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">		if (page == null) {</span>
+<span class="nc" id="L72">			page = 0; // Default to the first page</span>
+		}
+<span class="nc bnc" id="L74" title="All 2 branches missed.">		if (size == null) {</span>
+<span class="nc" id="L75">			size = 100; // Default to 100 transactions per page</span>
+		}
+
+		try {
+			// Set pagination details
+
+<span class="nc" id="L81">			Pageable pageable = PageRequest.of(page, size, Sort.by(&quot;transactionDate&quot;).descending());</span>
+
+			// Fetch paginated transactions for the given user
+<span class="nc" id="L84">			Page&lt;TransactionWithCardId&gt; transactions = transactionService.getTransactionsForUser(username, pageable);</span>
+
+			// Check if transactions are found
+
+<span class="nc bnc" id="L88" title="All 4 branches missed.">			if (transactions == null || transactions.isEmpty()) {</span>
+
+<span class="nc" id="L90">				return ResponseEntity.status(HttpStatus.NO_CONTENT).build();</span>
+			}
+
+			// Prepare paginated response
+
+<span class="nc" id="L95">			Map&lt;String, Object&gt; response = Map.of(&quot;content&quot;, transactions.getContent(), &quot;totalElements&quot;,</span>
+<span class="nc" id="L96">					transactions.getTotalElements(), &quot;totalPages&quot;, transactions.getTotalPages(), &quot;currentPage&quot;,</span>
+<span class="nc" id="L97">					transactions.getNumber(), &quot;size&quot;, transactions.getSize());</span>
+
+<span class="nc" id="L99">			System.out.println(&quot;response&quot; + response);</span>
+
+<span class="nc" id="L101">			return ResponseEntity.ok(response);</span>
+
+<span class="nc" id="L103">		} catch (Exception e) {</span>
+
+<span class="nc" id="L105">			logger.error(&quot;An error occurred while fetching the credit card transactions&quot;, e);</span>
+
+			// Return a 500 Internal Server Error with the exception message
+
+<span class="nc" id="L109">			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(&quot;error&quot;,</span>
+<span class="nc" id="L110">					List.of(Map.of(&quot;error&quot;, &quot;An error occurred while fetching transactions: &quot; + e.getMessage()))));</span>
+		}
+	}
+
+	/**
+	 * Retrieves the maximum expenses for all cards of the given customer in the
+	 * last month.
+	 * 
+	 * @param encodedusername The encoded username of the customer.
+	 * @param status          The status of the transactions to filter by:
+	 *                        'enabled', 'disabled', or 'both' (optional, default is
+	 *                        'both').
+	 * @param page            The page number to retrieve (optional, defaults to 0).
+	 * @param size            The number of transactions per page (optional,
+	 *                        defaults to 100).
+	 * @return A ResponseEntity containing the paginated max expense records or an
+	 *         error response.
+	 */
+
+	@Operation(summary = &quot;Retrieve the maximum expenses&quot;, description = &quot;View the maximum expenses for all cards of the given customer in the last month&quot;)
+	@GetMapping(&quot;/maxExpenses/lastMonth/{username}&quot;)
+	public ResponseEntity&lt;?&gt; getMaxExpensesForLastMonth(@PathVariable(&quot;username&quot;) String encodedusername,
+			@RequestParam(required = false, defaultValue = &quot;both&quot;) String status,
+			@RequestParam(required = false) Integer page, // No default value set
+			@RequestParam(required = false) Integer size) { // No default value set)
+
+		// Username validation: Check if it's null, empty, or exceeds max length
+
+<span class="nc" id="L138">		String username = decodeUsername(encodedusername);</span>
+
+		// Set defaults for page and limit if they are not provided
+<span class="nc bnc" id="L141" title="All 2 branches missed.">		if (page == null) {</span>
+<span class="nc" id="L142">			page = 0; // Default to the first page</span>
+		}
+<span class="nc bnc" id="L144" title="All 2 branches missed.">		if (size == null) {</span>
+<span class="nc" id="L145">			size = 100; // Default to 100 transactions per page</span>
+		}
+
+		// Status validation: Valid statuses are &quot;enabled&quot;, &quot;disabled&quot;, and &quot;both&quot;
+<span class="nc" id="L149">		List&lt;String&gt; validStatuses = List.of(&quot;enabled&quot;, &quot;disabled&quot;, &quot;both&quot;);</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">		if (!validStatuses.contains(status)) {</span>
+<span class="nc" id="L151">			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(List</span>
+<span class="nc" id="L152">					.of(Map.of(&quot;error&quot;, &quot;Invalid status value. Valid values are 'enabled', 'disabled', or 'both'&quot;)));</span>
+
+		}
+
+		try {
+
+			// Set pagination details
+
+<span class="nc" id="L160">			Pageable pageable = PageRequest.of(page, size, Sort.by(&quot;transactionDate&quot;).descending());</span>
+
+			// Fetch max expenses for the last month
+<span class="nc" id="L163">			Page&lt;Map&lt;String, Object&gt;&gt; maxExpenses = transactionService.getMaxExpensesForLastMonth(username, status,</span>
+					pageable);
+
+			// If no expenses are found, return a 204 No Content response
+<span class="nc bnc" id="L167" title="All 2 branches missed.">			if (maxExpenses.isEmpty()) {</span>
+<span class="nc" id="L168">				return ResponseEntity.status(HttpStatus.NO_CONTENT).build();</span>
+			}
+
+			// Return the max expenses with a 200 OK response
+
+<span class="nc" id="L173">			return ResponseEntity.ok(maxExpenses);</span>
+
+<span class="nc" id="L175">		} catch (IllegalArgumentException e) {</span>
+
+<span class="nc" id="L177">			return ResponseEntity.badRequest().body(List.of(Map.of(&quot;error&quot;, &quot;Invalid argument provided&quot;)));</span>
+<span class="nc" id="L178">		} catch (Exception e) {</span>
+
+<span class="nc" id="L180">			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L181">					.body(List.of(Map.of(&quot;error&quot;, &quot;An unexpected error occurred. Please try again later&quot;)));</span>
+		}
+	}
+
+	/**
+	 * Retrieves the high-value expenses for the given customer that exceed the
+	 * specified threshold.
+	 * 
+	 * @param encodedusername The encoded username of the customer.
+	 * @param limit           The number of high-value expenses to retrieve
+	 *                        (optional, defaults to 1).
+	 * @param status          The status of the transactions to filter by:
+	 *                        'enabled', 'disabled', or 'both' (optional, default is
+	 *                        'both').
+	 * @param amountThreshold The threshold above which transactions are considered
+	 *                        high-value.
+	 * @param page            The page number to retrieve (optional, defaults to 0).
+	 * @param size            The number of transactions per page (optional,
+	 *                        defaults to 100).
+	 * @return A ResponseEntity containing the high-value expenses or an error
+	 *         response.
+	 */
+
+	@Operation(summary = &quot;Retrieve the high-value expenses&quot;, description = &quot;View the high-value expenses for all cards of the given customer that exceed the specified threshold&quot;)
+	@GetMapping(&quot;/highvalue/expenses/{username}&quot;)
+	public ResponseEntity&lt;?&gt; getHighValueExpenses(@PathVariable(&quot;username&quot;) String encodedusername,
+			@RequestParam(required = false, defaultValue = &quot;1&quot;) int limit,
+			@RequestParam(required = false, defaultValue = &quot;both&quot;) String status, @RequestParam double amountThreshold,
+			@RequestParam(required = false) Integer page, // No default value set
+			@RequestParam(required = false) Integer size) {
+
+		// Validate username
+
+		// Set defaults for page and limit if they are not provided
+<span class="nc bnc" id="L215" title="All 2 branches missed.">		if (page == null) {</span>
+<span class="nc" id="L216">			page = 0; // Default to the first page</span>
+		}
+
+<span class="nc bnc" id="L219" title="All 2 branches missed.">		if (size == null) {</span>
+<span class="nc" id="L220">			size = 100; // Default to 100 transactions per page</span>
+		}
+
+<span class="nc" id="L223">		String username = decodeUsername(encodedusername);</span>
+
+		// Validate the limit to ensure it's a positive integer greater than 0
+<span class="nc bnc" id="L226" title="All 2 branches missed.">		if (limit &lt;= 0) {</span>
+<span class="nc" id="L227">			return buildErrorResponse(&quot;The 'limit' parameter must be a positive integer greater than 0.&quot;);</span>
+		}
+		// Validate amountThreshold
+<span class="nc bnc" id="L230" title="All 2 branches missed.">		if (amountThreshold &lt;= 0) {</span>
+<span class="nc" id="L231">			return buildErrorResponse(&quot;Amount threshold must be a positive value&quot;);</span>
+		}
+
+		// Validate status (should be either &quot;enabled&quot;, &quot;disabled&quot;, or &quot;both&quot;)
+
+<span class="nc" id="L236">		List&lt;String&gt; validStatuses = List.of(&quot;enabled&quot;, &quot;disabled&quot;, &quot;both&quot;);</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">		if (!validStatuses.contains(status)) {</span>
+<span class="nc" id="L238">			return buildErrorResponse(&quot;Invalid status value. Valid values are 'enabled', 'disabled', or 'both'&quot;);</span>
+		}
+
+		try {
+			// Call the service to get high-value expenses
+
+			// Set pagination details
+
+<span class="nc" id="L246">			Pageable pageable = PageRequest.of(page, size, Sort.by(&quot;transactionDate&quot;).descending());</span>
+
+<span class="nc" id="L248">			Map&lt;String, Page&lt;Map&lt;String, String&gt;&gt;&gt; highValueExpenses = transactionService</span>
+<span class="nc" id="L249">					.getHighValueExpensesForUser(username, limit, status, amountThreshold, pageable);</span>
+
+			// If no expenses are found, return 204 No Content
+<span class="nc bnc" id="L252" title="All 2 branches missed.">			if (highValueExpenses.isEmpty()) {</span>
+
+<span class="nc" id="L254">				return ResponseEntity.status(HttpStatus.NO_CONTENT).build();</span>
+			}
+
+			// Return the high-value expenses with a 200 OK response
+<span class="nc" id="L258">			return ResponseEntity.ok(highValueExpenses);</span>
+
+<span class="nc" id="L260">		} catch (IllegalArgumentException e) {</span>
+			// Log exception if needed
+<span class="nc" id="L262">			return buildErrorResponse(&quot;Invalid argument provided&quot;);</span>
+<span class="nc" id="L263">		} catch (Exception e) {</span>
+			// Log exception for debugging
+<span class="nc" id="L265">			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(</span>
+<span class="nc" id="L266">					Map.of(&quot;error&quot;, List.of(Map.of(&quot;error&quot;, &quot;An unexpected error occurred. Please try again later&quot;))));</span>
+		}
+	}
+
+	/**
+	 * Retrieves the last X expenses for the given customer.
+	 * 
+	 * @param encodedusername The encoded username of the customer.
+	 * @param limit           The number of expenses to retrieve (optional, defaults
+	 *                        to 1).
+	 * @param status          The status of the transactions to filter by:
+	 *                        'enabled', 'disabled', or 'both' (optional, default is
+	 *                        'both').
+	 * @param page            The page number to retrieve (optional, defaults to 0).
+	 * @param size            The number of transactions per page (optional,
+	 *                        defaults to
+	 */
+
+	@Operation(summary = &quot;Retrieve the last X expenses for all cards.&quot;, description = &quot;View the last X expenses for all cards associated with the given customer&quot;)
+	@GetMapping(&quot;/lastXTransactions/{username}&quot;)
+	public ResponseEntity&lt;?&gt; getLastXTransactionsForUser(@PathVariable(&quot;username&quot;) String encodedusername,
+			@RequestParam(required = false, defaultValue = &quot;1&quot;) int limit,
+			@RequestParam(required = false, defaultValue = &quot;both&quot;) String status,
+			@RequestParam(required = false) Integer page, // No default value set
+			@RequestParam(required = false) Integer size) {
+
+		// Validate the username
+
+<span class="nc" id="L294">		String username = decodeUsername(encodedusername);</span>
+
+		// Set defaults for page and limit if they are not provided
+<span class="nc bnc" id="L297" title="All 2 branches missed.">		if (page == null) {</span>
+<span class="nc" id="L298">			page = 0; // Default to the first page</span>
+		}
+
+<span class="nc bnc" id="L301" title="All 2 branches missed.">		if (size == null) {</span>
+<span class="nc" id="L302">			size = 100; // Default to 100 transactions per page</span>
+		}
+
+		// Validate the limit to ensure it's a positive integer greater than 0
+<span class="nc bnc" id="L306" title="All 2 branches missed.">		if (limit &lt;= 0) {</span>
+<span class="nc" id="L307">			return buildErrorResponse(&quot;The 'limit' parameter must be a positive integer greater than 0.&quot;);</span>
+		}
+		// Validate status (should be either &quot;enabled&quot;, &quot;disabled&quot;, or &quot;both&quot;)
+
+<span class="nc" id="L311">		List&lt;String&gt; validStatuses = List.of(&quot;enabled&quot;, &quot;disabled&quot;, &quot;both&quot;);</span>
+<span class="nc bnc" id="L312" title="All 2 branches missed.">		if (!validStatuses.contains(status)) {</span>
+<span class="nc" id="L313">			return buildErrorResponse(&quot;Invalid status value. Valid values are 'enabled', 'disabled', or 'both'&quot;);</span>
+		}
+
+		try {
+
+			// Set pagination details
+
+<span class="nc" id="L320">			Pageable pageable = PageRequest.of(page, size, Sort.by(&quot;transactionDate&quot;).descending());</span>
+
+<span class="nc" id="L322">			Map&lt;Integer, Page&lt;TransactionDetail&gt;&gt; transactions = transactionService</span>
+<span class="nc" id="L323">					.getLastXTransactionsForUser(username, limit, status, pageable);</span>
+
+<span class="nc bnc" id="L325" title="All 4 branches missed.">			if (transactions.isEmpty() || transactions == null) {</span>
+
+<span class="nc" id="L327">				return ResponseEntity.status(HttpStatus.NO_CONTENT).build();</span>
+
+			}
+
+<span class="nc" id="L331">			return ResponseEntity.ok(transactions);</span>
+
+<span class="nc" id="L333">		} catch (</span>
+
+		IllegalArgumentException e) {
+<span class="nc" id="L336">			return buildErrorResponse(&quot;Invalid argument provided&quot;);</span>
+
+<span class="nc" id="L338">		} catch (Exception e) {</span>
+<span class="nc" id="L339">			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L340">					.body(&quot;An unexpected error occurred. Please try again later&quot;);</span>
+		}
+
+	}
+
+	/**
+	 * Retrieves the last X expenses for the given customer - only for Backend.
+	 * 
+	 * @param encodedusername The encoded username of the customer.
+	 * @param limit           The number of expenses to retrieve (optional, defaults
+	 *                        to 1).
+	 * @param status          The status of the transactions to filter by:
+	 *                        'enabled', 'disabled', or 'both' (optional, default is
+	 *                        'both').
+	 * @param page            The page number to retrieve (optional, defaults to 0).
+	 * @param size            The number of transactions per page (optional,
+	 *                        defaults to 100).
+	 * @return A ResponseEntity containing the last X expenses or an error response.
+	 */
+
+	@Operation(summary = &quot;For Backend - Retrieve the last X expenses for all cards.&quot;, description = &quot;View the last X expenses for all cards associated with the given customer&quot;)
+	@GetMapping(&quot;/lastXExpenses/{username}&quot;)
+	public ResponseEntity&lt;?&gt; getLastXExpensesForUser(@PathVariable(&quot;username&quot;) String encodedusername,
+			@RequestParam(required = false, defaultValue = &quot;1&quot;) int limit,
+			@RequestParam(required = false, defaultValue = &quot;both&quot;) String status,
+			@RequestParam(required = false) Integer page, // No default value set
+			@RequestParam(required = false) Integer size) {
+
+		// Validate the username
+
+<span class="nc" id="L370">		String username = decodeUsername(encodedusername);</span>
+
+		// Set defaults for page and limit if they are not provided
+<span class="nc bnc" id="L373" title="All 2 branches missed.">		if (page == null) {</span>
+<span class="nc" id="L374">			page = 0; // Default to the first page</span>
+		}
+
+<span class="nc bnc" id="L377" title="All 2 branches missed.">		if (size == null) {</span>
+<span class="nc" id="L378">			size = 100; // Default to 100 transactions per page</span>
+		}
+
+		// Validate the limit to ensure it's a positive integer greater than 0
+<span class="nc bnc" id="L382" title="All 2 branches missed.">		if (limit &lt;= 0) {</span>
+<span class="nc" id="L383">			return buildErrorResponse(&quot;The 'limit' parameter must be a positive integer greater than 0.&quot;);</span>
+		}
+
+		// Validate status (should be either &quot;enabled&quot;, &quot;disabled&quot;, or &quot;both&quot;)
+<span class="nc" id="L387">		List&lt;String&gt; validStatuses = List.of(&quot;enabled&quot;, &quot;disabled&quot;, &quot;both&quot;);</span>
+<span class="nc bnc" id="L388" title="All 2 branches missed.">		if (!validStatuses.contains(status)) {</span>
+<span class="nc" id="L389">			return buildErrorResponse(&quot;Invalid status value. Valid values are 'enabled', 'disabled', or 'both'&quot;);</span>
+		}
+
+		try {
+
+			// Set pagination details
+<span class="nc" id="L395">			Pageable pageable = PageRequest.of(page, size, Sort.by(&quot;transactionDate&quot;).descending());</span>
+
+			// Call the service to get the last X expenses
+<span class="nc" id="L398">			Map&lt;String, Object&gt; transactions = transactionService.getLastXExpensesForUser(username, limit, status,</span>
+					pageable);
+
+			// If no transactions are found, return 204 No Content
+<span class="nc bnc" id="L402" title="All 4 branches missed.">			if (transactions.isEmpty() || transactions == null) {</span>
+<span class="nc" id="L403">				return ResponseEntity.status(HttpStatus.NO_CONTENT).build();</span>
+			}
+
+			// Return the last X transactions with a 200 OK response
+<span class="nc" id="L407">			return ResponseEntity.ok(transactions);</span>
+
+<span class="nc" id="L409">		} catch (IllegalArgumentException e) {</span>
+			// Log exception if needed
+<span class="nc" id="L411">			return buildErrorResponse(&quot;Invalid argument provided&quot;);</span>
+
+<span class="nc" id="L413">		} catch (Exception e) {</span>
+			// Log exception for debugging
+<span class="nc" id="L415">			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L416">					.body(List.of(Map.of(&quot;error&quot;, &quot;An unexpected error occurred. Please try again later&quot;)));</span>
+		}
+	}
+
+	// Helper method to decode username
+
+	private String decodeUsername(String encodedusername) {
+		try {
+<span class="nc" id="L424">			return decodename.decodeUsername(encodedusername);</span>
+<span class="nc" id="L425">		} catch (InvalidUsernameFormatException e) {</span>
+<span class="nc" id="L426">			logger.error(&quot;Failed to decode username: {}...&quot;, encodedusername.substring(0, 3), e);</span>
+<span class="nc" id="L427">			throw e;</span>
+		}
+	}
+
+	// Helper method to standardize error responses
+	private ResponseEntity&lt;?&gt; buildErrorResponse(String errorMessage) {
+<span class="nc" id="L433">		return ResponseEntity.status(HttpStatus.BAD_REQUEST)</span>
+<span class="nc" id="L434">				.body(Map.of(&quot;error&quot;, List.of(Map.of(&quot;error&quot;, errorMessage))));</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

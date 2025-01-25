@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionKafkaProducer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.kafka</a> &gt; <span class="el_source">TransactionKafkaProducer.java</span></div><h1>TransactionKafkaProducer.java</h1><pre class="source lang-java linenums">package com.ccms.service.kafka;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
+
+/**
+ * Kafka producer service for sending transaction logs to Kafka.
+ * &lt;p&gt;
+ * This component is responsible for producing transaction log messages and
+ * sending them to the Kafka topic &quot;transaction-log-topic&quot;. The transaction data
+ * is expected to be a string, which is sent to Kafka via the KafkaTemplate.
+ * &lt;/p&gt;
+ */
+
+@Component
+<span class="fc" id="L17">public class TransactionKafkaProducer {</span>
+
+	// Kafka topic to send transaction logs to
+
+	private static final String TRANSACTION_TOPIC = &quot;transaction-log-topic&quot;; // Kafka topic for transaction logs
+
+	// KafkaTemplate for sending messages to Kafka
+	@Autowired
+	private KafkaTemplate&lt;String, String&gt; kafkaTemplate;
+
+	/**
+	 * Sends a transaction log message to the Kafka topic &quot;transaction-log-topic&quot;.
+	 * &lt;p&gt;
+	 * This method sends the given transaction log message as a string to the Kafka
+	 * topic specified in {@link #TRANSACTION_TOPIC}.
+	 * &lt;/p&gt;
+	 *
+	 * @param transactionData The transaction log data to be sent to Kafka. This is
+	 *                        typically a JSON string or any other format.
+	 */
+
+	public void sendTransactionLog(String transactionData) {
+
+		// Sending the transaction log data to Kafka
+
+<span class="nc" id="L42">		kafkaTemplate.send(TRANSACTION_TOPIC, transactionData);</span>
+<span class="nc" id="L43">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

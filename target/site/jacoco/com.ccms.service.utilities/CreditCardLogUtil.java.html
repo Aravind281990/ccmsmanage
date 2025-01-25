@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreditCardLogUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.utilities</a> &gt; <span class="el_source">CreditCardLogUtil.java</span></div><h1>CreditCardLogUtil.java</h1><pre class="source lang-java linenums">package com.ccms.service.utilities;
+
+import java.time.Instant;
+import java.util.Map;
+import org.json.JSONObject;
+
+import com.ccms.service.kafka.CreditCardKafkaProducer;
+
+
+/**
+ * Utility class for logging credit card related events and sending logs to Kafka.
+ * &lt;p&gt;
+ * This class contains a static method to create a structured log and send it to Kafka. It provides 
+ * a way to log information related to credit card actions (such as success or failure), including 
+ * the username, credit card ID, and other relevant details.
+ * &lt;/p&gt;
+ * 
+ * &lt;p&gt;
+ * The log is prepared in the form of a JSON object, which includes the customer's username, credit 
+ * card ID, status of the action, message, and a timestamp. After the log is prepared, it is sent to 
+ * a Kafka topic through the provided {@link CreditCardKafkaProducer}.
+ * &lt;/p&gt;
+ * 
+ * @see CreditCardKafkaProducer
+ */
+
+<span class="fc" id="L27">public class CreditCardLogUtil {</span>
+	
+	
+	  // Common method for creating and sending the log
+	
+    public static void logCreditCard(Map&lt;String, Object&gt; jsonLogMap, 
+                                            String status, 
+                                            String message, 
+                                            String username, 
+                                            int creditCardId,
+                                            CreditCardKafkaProducer creditCardKafkaProducer) {
+        
+        // Prepare the log data
+<span class="fc" id="L40">        jsonLogMap.put(&quot;customer_name&quot;, username);</span>
+<span class="fc" id="L41">        jsonLogMap.put(&quot;credit_card_id&quot;, creditCardId);</span>
+<span class="fc" id="L42">        jsonLogMap.put(&quot;message&quot;, message);</span>
+<span class="fc" id="L43">        jsonLogMap.put(&quot;status&quot;, status);</span>
+<span class="fc" id="L44">        jsonLogMap.put(&quot;timestamp&quot;, Instant.now().toString());</span>
+
+        // Convert the map to a JSONObject and send it to Kafka
+        
+<span class="fc" id="L48">        creditCardKafkaProducer.sendCreditCardLog(new JSONObject(jsonLogMap).toString());</span>
+<span class="fc" id="L49">    }</span>
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

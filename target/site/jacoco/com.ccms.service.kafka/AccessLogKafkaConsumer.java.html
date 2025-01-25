@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AccessLogKafkaConsumer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.kafka</a> &gt; <span class="el_source">AccessLogKafkaConsumer.java</span></div><h1>AccessLogKafkaConsumer.java</h1><pre class="source lang-java linenums">package com.ccms.service.kafka;
+
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
+
+/**
+ * Service to consume access logs from a Kafka topic and process the messages.
+ * &lt;p&gt;
+ * This class listens to the &quot;access-logs&quot; Kafka topic. It is part of a Kafka
+ * consumer group called &quot;credit-card-consumer-group&quot;. Each time a message is
+ * published to the topic, the {@link #listenTransactionLogs(String)} method is
+ * triggered to process the log.
+ * &lt;/p&gt;
+ */
+
+@Service
+<span class="fc" id="L17">public class AccessLogKafkaConsumer {</span>
+
+	/**
+	 * Kafka listener method that listens to messages on the &quot;access-logs&quot; topic.
+	 * The method is automatically triggered when a message is received on the
+	 * topic.
+	 * &lt;p&gt;
+	 * In this simple implementation, the message (log data) is just printed to the
+	 * console. In a real-world scenario, you could process this message (e.g.,
+	 * storing logs in a database, triggering alerts, or monitoring activities).
+	 * &lt;/p&gt;
+	 *
+	 * @param message The message received from the Kafka topic. This could be the
+	 *                log details regarding user access events or other system
+	 *                events.
+	 */
+
+	@KafkaListener(topics = &quot;access-logs&quot;, groupId = &quot;credit-card-consumer-group&quot;)
+	public void listenTransactionLogs(String message) {
+
+		// Log the received message to the console (can be replaced with actual
+		// processing logic)
+
+<span class="nc" id="L40">		System.out.println(&quot;Received access logs: &quot; + message);</span>
+<span class="nc" id="L41">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

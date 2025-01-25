@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Customer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.model</a> &gt; <span class="el_source">Customer.java</span></div><h1>Customer.java</h1><pre class="source lang-java linenums">package com.ccms.service.model;
+
+import java.util.Date;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+/**
+ * Represents a Customer entity.
+ * &lt;p&gt;
+ * This class holds information about a customer, including personal details,
+ * contact information, address, and account status.
+ * &lt;/p&gt;
+ * 
+ * The document is stored in the MongoDB collection named &quot;Customer&quot;.
+ */
+
+<span class="fc" id="L27">@NoArgsConstructor</span>
+<span class="fc" id="L28">@AllArgsConstructor</span>
+<span class="pc bpc" id="L29" title="51 of 84 branches missed.">@Data</span>
+
+@Document(&quot;Customer&quot;)
+public class Customer {
+
+	@Id
+<span class="fc" id="L35">	public String id;</span>
+	@NotNull
+<span class="fc" id="L37">	public String username;</span>
+<span class="fc" id="L38">	public String password;</span>
+<span class="fc" id="L39">	public Name name;</span>
+<span class="fc" id="L40">	public String dob;</span>
+<span class="fc" id="L41">	public String sex;</span>
+	
+	@Email
+<span class="fc" id="L44">	public String email;</span>
+<span class="fc" id="L45">	public int customerId;</span>
+<span class="fc" id="L46">	public Address address;</span>
+<span class="fc" id="L47">	public boolean active;</span>
+<span class="fc" id="L48">	public Date createdAt;</span>
+
+    /**
+     * Inner class representing the name of the customer.
+     * &lt;p&gt;
+     * This includes the first name and last name.
+     * &lt;/p&gt;
+     */
+	
+<span class="fc" id="L57">	@NoArgsConstructor</span>
+<span class="fc" id="L58">	@AllArgsConstructor</span>
+<span class="pc bpc" id="L59" title="12 of 22 branches missed.">	@Data</span>
+	public static class Name {
+
+<span class="fc" id="L62">		public String first;</span>
+<span class="fc" id="L63">		public String last;</span>
+
+	}
+
+    /**
+     * Inner class representing the address of the customer.
+     * &lt;p&gt;
+     * This includes the street, city, state, zip code, and country.
+     * &lt;/p&gt;
+     */
+	
+<span class="nc" id="L74">	@NoArgsConstructor</span>
+<span class="fc" id="L75">	@AllArgsConstructor</span>
+<span class="pc bpc" id="L76" title="23 of 40 branches missed.">	@Data</span>
+	public static class Address {
+
+<span class="fc" id="L79">		public String street;</span>
+<span class="fc" id="L80">		public String city;</span>
+<span class="fc" id="L81">		public String state;</span>
+	    @Min(value = 0, message = &quot;Zip code cannot be negative&quot;)
+<span class="fc" id="L83">	    public int zip;</span>
+<span class="fc" id="L84">	    public String country;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
