@@ -35,16 +35,16 @@ public class CreditCardServiceImpl implements CreditCardService {
 	private static final Logger logger = LoggerFactory.getLogger(CreditCardServiceImpl.class);
 
 	@Autowired
-	private CustomerRepository customerRepository;
+	public CustomerRepository customerRepository;
 
 	@Autowired
-	private CreditCardRepository creditCardRepository;
+	public CreditCardRepository creditCardRepository;
 	
 	@Autowired
-	private CreditCardEnDecryption cardEnDecryption;
+	public CreditCardEnDecryption cardEnDecryption;
 
 	@Autowired
-	private CreditCardFormatter cardFormatter;
+	public CreditCardFormatter cardFormatter;
 	  
 
 	@Override

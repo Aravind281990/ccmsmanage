@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class TransactionWithCreditCardInfo {
 	
 	
-	private String creditCardNumber;  
-    private TransactionDetail transactionDetail;
+	public String creditCardNumber;  
+	public TransactionDetail transactionDetail;
 
 }

@@ -66,22 +66,22 @@ public class TransactionServiceimpl implements TransactionService {
 	private static final Logger logger = LoggerFactory.getLogger(TransactionServiceimpl.class);
 
 	@Autowired
-	private CustomerRepository customerRepository;
+	public CustomerRepository customerRepository;
 
 	@Autowired
-	private CreditCardService cardService; // To fetch credit cards
+	public CreditCardService cardService; // To fetch credit cards
 
 	@Autowired
-	private TransactionRepository transactionRepository;
+	public TransactionRepository transactionRepository;
 
 	@Autowired
-	private CreditCardEnDecryption cardEnDecryption;
+	public CreditCardEnDecryption cardEnDecryption;
 
 	@Autowired
-	private CreditCardFormatter cardFormatter;
+	public CreditCardFormatter cardFormatter;
 
 	@Autowired
-	private MongoTemplate mongoTemplate;
+	public MongoTemplate mongoTemplate;
 
 	@Override
 	public Page<TransactionWithCardId> getTransactionsForUser(String username, Pageable pageable) {

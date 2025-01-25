@@ -32,10 +32,10 @@ import lombok.NoArgsConstructor;
 public class CreditCard {
 
 	@Id
-	private String id;
-	private String username;
-	private String nameOnTheCard;
-	private List<CreditCardDetail> creditcards;
+	public String id;
+	public String username;
+	public String nameOnTheCard;
+	public List<CreditCardDetail> creditcards;
 
 	/**
 	 * Inner class representing the detailed information of a specific credit card.
@@ -52,13 +52,13 @@ public class CreditCard {
 
 		// @JsonIgnore
 		@Schema(hidden = true)
-		private int creditCardId;
-		private String creditCardNumber;
-		private int expiryMonth;
-		private int expiryYear;
-		private int cvv;
-		private String wireTransactionVendor;
-		private String status;
+		public int creditCardId;
+		public String creditCardNumber;
+		public int expiryMonth;
+		public int expiryYear;
+		public int cvv;
+		public String wireTransactionVendor;
+		public String status;
 	}
 
 }

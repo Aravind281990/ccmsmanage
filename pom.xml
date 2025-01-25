@@ -168,7 +168,23 @@
 		</dependencies>
 	</dependencyManagement>
 	<build>
-		<plugins>
+		<plugins>			
+			    <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.10.1</version>
+            <configuration>
+                <source>${java.version}</source>
+                <target>${java.version}</target>
+                <annotationProcessorPaths>
+                    <annotationProcessorPath>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                        <version>1.18.26</version> <!-- or use the latest version -->
+                    </annotationProcessorPath>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
 			 <!-- SonarQube Plugin for analysis -->
         <plugin>
             <groupId>org.sonarsource.scanner.maven</groupId>
@@ -184,7 +200,6 @@
                 <argLine>${argLine}</argLine>
             </configuration>
         </plugin>
-
         <!-- JaCoCo Plugin for code coverage -->
         <plugin>
             <groupId>org.jacoco</groupId>
