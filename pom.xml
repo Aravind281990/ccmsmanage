@@ -48,7 +48,17 @@
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
-	<!--	   <dependency>
+		    <!-- Apache Kafka (kafka-clients) dependency -->
+		    <!-- Apache Kafka dependency (it should be compatible with Spring Kafka version) -->
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+		<dependency>
+            <groupId>io.micrometer</groupId>
+           <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+	    <dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
@@ -64,7 +74,48 @@
          <groupId>org.springframework.boot</groupId>
          <artifactId>spring-boot-starter-aop</artifactId>
          <version>3.0.4</version>
-        </dependency>  -->
+        </dependency>  
+            <!-- JUnit 5 dependencies -->
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>5.7.1</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>5.7.1</version>
+        <scope>test</scope>
+    </dependency>
+        <!-- For JUnit 5 vintage (JUnit 4 compatibility) -->
+    <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>5.7.0</version>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- Mockito dependencies for mocking the services and repositories -->
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>3.6.28</version>
+        <scope>test</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>3.6.28</version>
+        <scope>test</scope>
+    </dependency>
+        <!-- Spring Kafka Test for testing purposes -->
+    <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka-test</artifactId>
+        <scope>test</scope>
+    </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -105,7 +156,7 @@
         <!-- This brings in SLF4J, Logback, etc. -->
         </dependency>
 	</dependencies>
-		<!--<dependencyManagement>
+	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
@@ -115,16 +166,58 @@
 				<scope>import</scope>
 			</dependency>
 		</dependencies>
-	</dependencyManagement> -->
+	</dependencyManagement>
 	<build>
 		<plugins>
+			 <!-- SonarQube Plugin for analysis -->
+        <plugin>
+            <groupId>org.sonarsource.scanner.maven</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
+            <version>3.9.1.2184</version> <!-- You can check for the latest version -->
+        </plugin>
+      <!-- Surefire Plugin to run tests -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.0.0-M5</version>
+            <configuration>
+                <argLine>${argLine}</argLine>
+            </configuration>
+        </plugin>
+
+        <!-- JaCoCo Plugin for code coverage -->
+        <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.8</version>
+            <executions>
+                <!-- First execution: prepare the agent to collect execution data -->
+                <execution>
+                    <id>prepare-agent</id> <!-- Unique execution ID -->
+                    <goals>
+                        <goal>prepare-agent</goal>
+                    </goals>
+                    <phase>initialize</phase>
+                </execution>
+
+                <!-- Second execution: generate the report after the tests -->
+                <execution>
+                    <id>generate-report</id> <!-- Unique execution ID -->
+                    <goals>
+                        <goal>report</goal>
+                    </goals>   
+                    <!--phase>post-integration-test</phase>-->
+                    <phase>test</phase>
+                </execution>
+            </executions>
+        </plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
-	<!--<repositories>
+	<repositories>
 		<repository>
 			<id>netflix-candidates</id>
 			<name>Netflix Candidates</name>
@@ -133,6 +226,6 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
-	</repositories>-->
+	</repositories>
 
 </project>

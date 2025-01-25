@@ -31,6 +31,21 @@ import com.ccms.service.utilities.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+/**
+ * Controller responsible for handling customer credit card operations. This
+ * includes fetching credit cards, adding new cards, and toggling card statuses.
+ * 
+ * <p>
+ * Provides a REST API for customers to manage their credit cards with
+ * operations such as:
+ * </p>
+ * <ul>
+ * <li>Get all credit cards for a user</li>
+ * <li>Add a new credit card</li>
+ * <li>Toggle the status of a credit card</li>
+ * </ul>
+ */
+
 @Tag(name = "CreditCard Controller", description = "Controller for managing Customers Creditcard")
 @RestController
 @Validated
@@ -48,29 +63,41 @@ public class CreditCardController {
 	@Autowired
 	private Decodename decodename;
 
-	// Reusable map for logging
+	/**
+	 * Reusable map used for logging additional context information. This map stores
+	 * key-value pairs for logging purposes to provide more context on operations
+	 * such as credit card addition, deletion, or updates.
+	 */
 
 	Map<String, Object> jsonLogMap = new LinkedHashMap<>();
+
+	/**
+	 * Retrieves all credit cards for a given customer.
+	 *
+	 * @param encodedusername The encoded username of the customer whose credit
+	 *                        cards are to be retrieved.
+	 * @param showFullNumber  Flag indicating whether to show full credit card
+	 *                        numbers or masked numbers.
+	 * @return A {@link ResponseEntity} containing the list of credit cards or an
+	 *         error message.
+	 */
 
 	@Operation(summary = "Get all Creditcards", description = "Provides a list of all credit cards associated with the given customer")
 	@GetMapping("/listcreditcards/{username}")
 	public ResponseEntity<Object> getCreditCardsForUser(@PathVariable("username") String encodedusername,
 			@RequestParam boolean showFullNumber) {
 
-		// Handle validation failure explicitly
-
 		String username = decodeUsername(encodedusername);
 
 		try {
-			// Call the service layer to fetch the credit cards for the given user
+
 			CreditCard creditCards = creditCardService.getCreditCardForUser(username, showFullNumber);
 
-			// If no credit cards are found, return 404 Not Found
 			if (creditCards == null) {
 				return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found",
 						"No credit cards found for user: " + username);
 			}
-			// Return the credit card data if found
+
 			return ResponseEntity.ok(creditCards);
 
 		} catch (CreditCardNotFoundException e) {
@@ -88,31 +115,34 @@ public class CreditCardController {
 		}
 	}
 
+	/**
+	 * Adds a new credit card for the specified customer.
+	 *
+	 * @param encodedusername  The encoded username of the customer to whom the
+	 *                         credit card will be added.
+	 * @param creditCardDetail The details of the credit card to be added.
+	 * @return A {@link ResponseEntity} containing the added credit card details or
+	 *         an error message.
+	 */
+
 	@Operation(summary = "Add new Creditcards", description = "Add new credit cards for the specified customer")
 	@PostMapping("/addcreditcard/{username}")
 	public ResponseEntity<Object> addCreditCard(@PathVariable("username") String encodedusername,
 			@RequestBody CreditCard.CreditCardDetail creditCardDetail) {
 
-		// Handle validation for username explicitly
-
 		String username = decodeUsername(encodedusername);
 
-		// Handle validation for credit card details
 		if (creditCardDetail == null) {
 			return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", "Credit card details cannot be null");
 		}
 
 		try {
-			// Call the service layer to add the credit card
+
 			CreditCardDetail updatedCreditCard = creditCardService.addCreditCard(username, creditCardDetail);
 
-			// If the operation is successful, return a 201 Created status with the updated
-			// credit card
-
-			// Send credit card log to Kafka
+			// Log the success to Kafka
 			String message = "Credit card added successfully";
 
-			// Use the common method to log success
 			CreditCardLogUtil.logCreditCard(jsonLogMap, "success", message, username,
 					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);
 
@@ -120,54 +150,56 @@ public class CreditCardController {
 
 		} catch (IllegalArgumentException ex) {
 
-			// Log the exception for validation failure
-
 			logger.error("Error occurred while adding credit card for user: {}, Credit Card ID: {}", username,
 					creditCardDetail.getCreditCardId(), ex);
 
-			// Send credit card log to Kafka
 			String message = "Error occurred while adding the credit card -> " + ex.getMessage();
 
-			// Use the common method to log success
 			CreditCardLogUtil.logCreditCard(jsonLogMap, "failure", message, username,
 					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);
 
 			return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());
 		}
-		
-		catch (DuplicateCreditCardException ex) {
 
-			// Log the exception for validation failure
+		catch (DuplicateCreditCardException ex) {
 
 			logger.error("Credit card already exist and associated with this user: {}, Credit Card ID: {}", username,
 					creditCardDetail.getCreditCardId(), ex);
 
-			// Send credit card log to Kafka
 			String message = "Credit card already exist and associated with this user -> " + ex.getMessage();
 
-			// Use the common method to log success
 			CreditCardLogUtil.logCreditCard(jsonLogMap, "failure", message, username,
 					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);
 
 			return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());
-			
+
 		}
 
 		catch (Exception e) {
-			// Log the exception for debugging
+
 			logger.error("An unexpected error occurred while adding credit card for user: {}, Credit Card ID: {}",
 					username, creditCardDetail.getCreditCardId(), e);
 
 			String message = "Error occurred while adding the credit card" + e.getMessage();
 
-			// Use the common method to log success
 			CreditCardLogUtil.logCreditCard(jsonLogMap, "failure", message, username,
 					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);
-			// Return a 500 Internal Server Error with the exception message
+
 			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
 					"An unexpected error occurred");
 		}
 	}
+
+	/**
+	 * Toggles the status (active/inactive) of a specified credit card for the given
+	 * customer.
+	 *
+	 * @param encodedusername The encoded username of the customer whose credit card
+	 *                        status is to be updated.
+	 * @param creditCardId    The ID of the credit card whose status is to be
+	 *                        toggled.
+	 * @return A {@link ResponseEntity} containing a success or failure message.
+	 */
 
 	@Operation(summary = "Toggle Creditcards Status", description = "Update the status (Active/Inactive) of the credit cards for the given customer")
 	@PutMapping("/togglecreditcard/{username}/{creditCardId}/toggle")
@@ -177,17 +209,14 @@ public class CreditCardController {
 		String username = decodeUsername(encodedusername);
 
 		try {
-			// Call the service to toggle the credit card status
+
 			boolean statusUpdated = creditCardService.toggleCreditCardStatus(username, creditCardId);
 
-			// If the status was not updated (e.g., invalid credit card ID), return a 404
-			// Not Found
 			if (!statusUpdated) {
 
 				String message = "Credit card status not toggled -> ID : " + creditCardId + " was not found for user: "
 						+ username;
 
-				// Use the common method to log failure
 				CreditCardLogUtil.logCreditCard(jsonLogMap, "failure", message, username, creditCardId,
 						creditCardKafkaProducer);
 
@@ -195,18 +224,26 @@ public class CreditCardController {
 
 			}
 
-			// Send credit card log to Kafka
-
 			String message = "Credit card status toggled successfully";
 
 			CreditCardLogUtil.logCreditCard(jsonLogMap, "success", message, username, creditCardId,
 					creditCardKafkaProducer);
 
-			// Return a success response with a 200 OK status
 			return ResponseEntity.ok(message);
 
-		} catch (Exception e) {
-			// Log the exception for debugging
+		} catch (CreditCardNotFoundException ex) {
+
+			String message = "Credit card status not toggled -> ID : " + creditCardId + " was not found for user: "
+					+ username;
+
+			CreditCardLogUtil.logCreditCard(jsonLogMap, "failure", message, username, creditCardId,
+					creditCardKafkaProducer);
+
+			return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", message);
+		}
+
+		catch (Exception e) {
+
 			logger.error("An error occurred while toggling the credit card status", e);
 
 			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
@@ -214,7 +251,9 @@ public class CreditCardController {
 		}
 	}
 
-	// Helper method to decode username
+	/**
+	 * Decodes the encoded username
+	 */
 
 	private String decodeUsername(String encodedusername) {
 		try {
@@ -225,7 +264,10 @@ public class CreditCardController {
 		}
 	}
 
-	// Helper method to handle error responses
+	/**
+	 * Helper method for error responses
+	 */
+
 	private ResponseEntity<Object> createErrorResponse(HttpStatus status, String error, String message) {
 		return ResponseEntity.status(status).body(new ErrorResponse(error, message));
 	}

@@ -20,6 +20,20 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * A filter for logging HTTP access details, including request and response information,
+ * and sending the logs to a Kafka topic for centralized logging or analysis.
+ * <p>
+ * This filter intercepts all incoming HTTP requests and outgoing responses, logs the details
+ * such as HTTP method, URL, client IP, status code, response time, request/response sizes,
+ * user-agent, referer, and the timestamp of the request. The log is formatted in JSON format
+ * and sent to a Kafka producer for further processing or monitoring.
+ * </p>
+ * 
+ * @see Filter
+ * @see AccessLogKafkaProducer
+ */
+
 @Component
 @WebFilter("/*")
 public class AccessLogFilter implements Filter {
@@ -89,7 +103,7 @@ public class AccessLogFilter implements Filter {
 		);
 
 		// Log to console (optional)
-		logger.info(logMessageJson);
+		// logger.info(logMessageJson);
 
 		// Send the log message to Kafka
 		accessLogKafkaProducer.sendLog(logMessageJson);

@@ -5,6 +5,10 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -15,13 +19,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ccms.service.exception.InvalidUsernameFormatException;
-import com.ccms.service.model.Transaction;
 import com.ccms.service.model.Transaction.TransactionDetail;
+import com.ccms.service.model.TransactionWithCardId;
 import com.ccms.service.service.TransactionService;
 import com.ccms.service.utilities.Decodename;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+/**
+ * Controller responsible for managing credit card transactions related to
+ * customers. This includes fetching transaction history, expenses, and
+ * high-value transactions for a given customer.
+ */
 
 @Tag(name = "Transaction Controller", description = "Controller for managing Customers Creditcard Transactions")
 @RestController
@@ -37,29 +47,58 @@ public class TransactionController {
 	@Autowired
 	private Decodename decodename;
 
+	/**
+	 * Fetches all transactions for a given customer, including pagination details.
+	 * 
+	 * @param encodedusername The encoded username of the customer.
+	 * @param page            The page number to retrieve (optional, defaults to 0).
+	 * @param size            The number of transactions per page (optional,
+	 *                        defaults to 100).
+	 * @return A ResponseEntity containing the paginated list of transactions or an
+	 *         error response.
+	 */
+
 	@Operation(summary = "Get all Transactions", description = "Show all transactions for every card associated with the given customer")
 	@GetMapping("/{username}")
-	public ResponseEntity<?> gettransactionsforuser(@PathVariable("username") String encodedusername) {
-
-		// Handle validation failure explicitly
+	public ResponseEntity<?> gettransactionsforuser(@PathVariable("username") String encodedusername,
+			@RequestParam(required = false) Integer page, // No default value set
+			@RequestParam(required = false) Integer size) { // No default value set
 
 		String username = decodeUsername(encodedusername);
 
+		logger.info("Fetching transactions for user: {}, page: {}, limit: {}", username, page, size);
+
+		if (page == null) {
+			page = 0; // Default to the first page
+		}
+		if (size == null) {
+			size = 100; // Default to 100 transactions per page
+		}
+
 		try {
-			// Call the service layer to fetch transactions
+			// Set pagination details
 
-			Transaction transaction = transactionService.getTransactionsforuser(username);
+			Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
 
-			// If no transactions are found, return 204 Not Found
+			// Fetch paginated transactions for the given user
+			Page<TransactionWithCardId> transactions = transactionService.getTransactionsForUser(username, pageable);
 
-			if (transaction == null) {
+			// Check if transactions are found
 
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Transactions found for user: " + username);
+			if (transactions == null || transactions.isEmpty()) {
+
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 			}
 
-			// Return the transaction data if found
+			// Prepare paginated response
 
-			return ResponseEntity.ok(transaction);
+			Map<String, Object> response = Map.of("content", transactions.getContent(), "totalElements",
+					transactions.getTotalElements(), "totalPages", transactions.getTotalPages(), "currentPage",
+					transactions.getNumber(), "size", transactions.getSize());
+
+			System.out.println("response" + response);
+
+			return ResponseEntity.ok(response);
 
 		} catch (Exception e) {
 
@@ -72,15 +111,39 @@ public class TransactionController {
 		}
 	}
 
+	/**
+	 * Retrieves the maximum expenses for all cards of the given customer in the
+	 * last month.
+	 * 
+	 * @param encodedusername The encoded username of the customer.
+	 * @param status          The status of the transactions to filter by:
+	 *                        'enabled', 'disabled', or 'both' (optional, default is
+	 *                        'both').
+	 * @param page            The page number to retrieve (optional, defaults to 0).
+	 * @param size            The number of transactions per page (optional,
+	 *                        defaults to 100).
+	 * @return A ResponseEntity containing the paginated max expense records or an
+	 *         error response.
+	 */
+
 	@Operation(summary = "Retrieve the maximum expenses", description = "View the maximum expenses for all cards of the given customer in the last month")
 	@GetMapping("/maxExpenses/lastMonth/{username}")
-	public ResponseEntity<List<Map<String, Object>>> getMaxExpensesForLastMonth(
-			@PathVariable("username") String encodedusername,
-			@RequestParam(required = false, defaultValue = "both") String status) {
+	public ResponseEntity<?> getMaxExpensesForLastMonth(@PathVariable("username") String encodedusername,
+			@RequestParam(required = false, defaultValue = "both") String status,
+			@RequestParam(required = false) Integer page, // No default value set
+			@RequestParam(required = false) Integer size) { // No default value set)
 
 		// Username validation: Check if it's null, empty, or exceeds max length
 
 		String username = decodeUsername(encodedusername);
+
+		// Set defaults for page and limit if they are not provided
+		if (page == null) {
+			page = 0; // Default to the first page
+		}
+		if (size == null) {
+			size = 100; // Default to 100 transactions per page
+		}
 
 		// Status validation: Valid statuses are "enabled", "disabled", and "both"
 		List<String> validStatuses = List.of("enabled", "disabled", "both");
@@ -91,8 +154,14 @@ public class TransactionController {
 		}
 
 		try {
+
+			// Set pagination details
+
+			Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
+
 			// Fetch max expenses for the last month
-			List<Map<String, Object>> maxExpenses = transactionService.getMaxExpensesForLastMonth(username, status);
+			Page<Map<String, Object>> maxExpenses = transactionService.getMaxExpensesForLastMonth(username, status,
+					pageable);
 
 			// If no expenses are found, return a 204 No Content response
 			if (maxExpenses.isEmpty()) {
@@ -113,14 +182,43 @@ public class TransactionController {
 		}
 	}
 
+	/**
+	 * Retrieves the high-value expenses for the given customer that exceed the
+	 * specified threshold.
+	 * 
+	 * @param encodedusername The encoded username of the customer.
+	 * @param limit           The number of high-value expenses to retrieve
+	 *                        (optional, defaults to 1).
+	 * @param status          The status of the transactions to filter by:
+	 *                        'enabled', 'disabled', or 'both' (optional, default is
+	 *                        'both').
+	 * @param amountThreshold The threshold above which transactions are considered
+	 *                        high-value.
+	 * @param page            The page number to retrieve (optional, defaults to 0).
+	 * @param size            The number of transactions per page (optional,
+	 *                        defaults to 100).
+	 * @return A ResponseEntity containing the high-value expenses or an error
+	 *         response.
+	 */
+
 	@Operation(summary = "Retrieve the high-value expenses", description = "View the high-value expenses for all cards of the given customer that exceed the specified threshold")
 	@GetMapping("/highvalue/expenses/{username}")
 	public ResponseEntity<?> getHighValueExpenses(@PathVariable("username") String encodedusername,
 			@RequestParam(required = false, defaultValue = "1") int limit,
-			@RequestParam(required = false, defaultValue = "both") String status,
-			@RequestParam double amountThreshold) {
+			@RequestParam(required = false, defaultValue = "both") String status, @RequestParam double amountThreshold,
+			@RequestParam(required = false) Integer page, // No default value set
+			@RequestParam(required = false) Integer size) {
 
 		// Validate username
+
+		// Set defaults for page and limit if they are not provided
+		if (page == null) {
+			page = 0; // Default to the first page
+		}
+
+		if (size == null) {
+			size = 100; // Default to 100 transactions per page
+		}
 
 		String username = decodeUsername(encodedusername);
 
@@ -143,8 +241,12 @@ public class TransactionController {
 		try {
 			// Call the service to get high-value expenses
 
-			Map<String, List<Map<String, String>>> highValueExpenses = transactionService
-					.getHighValueExpensesForUser(username, limit, status, amountThreshold);
+			// Set pagination details
+
+			Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
+
+			Map<String, Page<Map<String, String>>> highValueExpenses = transactionService
+					.getHighValueExpensesForUser(username, limit, status, amountThreshold, pageable);
 
 			// If no expenses are found, return 204 No Content
 			if (highValueExpenses.isEmpty()) {
@@ -165,15 +267,40 @@ public class TransactionController {
 		}
 	}
 
+	/**
+	 * Retrieves the last X expenses for the given customer.
+	 * 
+	 * @param encodedusername The encoded username of the customer.
+	 * @param limit           The number of expenses to retrieve (optional, defaults
+	 *                        to 1).
+	 * @param status          The status of the transactions to filter by:
+	 *                        'enabled', 'disabled', or 'both' (optional, default is
+	 *                        'both').
+	 * @param page            The page number to retrieve (optional, defaults to 0).
+	 * @param size            The number of transactions per page (optional,
+	 *                        defaults to
+	 */
+
 	@Operation(summary = "Retrieve the last X expenses for all cards.", description = "View the last X expenses for all cards associated with the given customer")
 	@GetMapping("/lastXTransactions/{username}")
 	public ResponseEntity<?> getLastXTransactionsForUser(@PathVariable("username") String encodedusername,
 			@RequestParam(required = false, defaultValue = "1") int limit,
-			@RequestParam(required = false, defaultValue = "both") String status) {
+			@RequestParam(required = false, defaultValue = "both") String status,
+			@RequestParam(required = false) Integer page, // No default value set
+			@RequestParam(required = false) Integer size) {
 
 		// Validate the username
 
 		String username = decodeUsername(encodedusername);
+
+		// Set defaults for page and limit if they are not provided
+		if (page == null) {
+			page = 0; // Default to the first page
+		}
+
+		if (size == null) {
+			size = 100; // Default to 100 transactions per page
+		}
 
 		// Validate the limit to ensure it's a positive integer greater than 0
 		if (limit <= 0) {
@@ -187,8 +314,13 @@ public class TransactionController {
 		}
 
 		try {
-			Map<Integer, List<TransactionDetail>> transactions = transactionService
-					.getLastXTransactionsForUser(username, limit, status);
+
+			// Set pagination details
+
+			Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
+
+			Map<Integer, Page<TransactionDetail>> transactions = transactionService
+					.getLastXTransactionsForUser(username, limit, status, pageable);
 
 			if (transactions.isEmpty() || transactions == null) {
 
@@ -210,15 +342,41 @@ public class TransactionController {
 
 	}
 
+	/**
+	 * Retrieves the last X expenses for the given customer - only for Backend.
+	 * 
+	 * @param encodedusername The encoded username of the customer.
+	 * @param limit           The number of expenses to retrieve (optional, defaults
+	 *                        to 1).
+	 * @param status          The status of the transactions to filter by:
+	 *                        'enabled', 'disabled', or 'both' (optional, default is
+	 *                        'both').
+	 * @param page            The page number to retrieve (optional, defaults to 0).
+	 * @param size            The number of transactions per page (optional,
+	 *                        defaults to 100).
+	 * @return A ResponseEntity containing the last X expenses or an error response.
+	 */
+
 	@Operation(summary = "For Backend - Retrieve the last X expenses for all cards.", description = "View the last X expenses for all cards associated with the given customer")
 	@GetMapping("/lastXExpenses/{username}")
 	public ResponseEntity<?> getLastXExpensesForUser(@PathVariable("username") String encodedusername,
 			@RequestParam(required = false, defaultValue = "1") int limit,
-			@RequestParam(required = false, defaultValue = "both") String status) {
+			@RequestParam(required = false, defaultValue = "both") String status,
+			@RequestParam(required = false) Integer page, // No default value set
+			@RequestParam(required = false) Integer size) {
 
 		// Validate the username
 
 		String username = decodeUsername(encodedusername);
+
+		// Set defaults for page and limit if they are not provided
+		if (page == null) {
+			page = 0; // Default to the first page
+		}
+
+		if (size == null) {
+			size = 100; // Default to 100 transactions per page
+		}
 
 		// Validate the limit to ensure it's a positive integer greater than 0
 		if (limit <= 0) {
@@ -232,9 +390,13 @@ public class TransactionController {
 		}
 
 		try {
+
+			// Set pagination details
+			Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
+
 			// Call the service to get the last X expenses
-			List<Map<String, Object>> transactions = transactionService.getLastXExpensesForUser(username, limit,
-					status);
+			Map<String, Object> transactions = transactionService.getLastXExpensesForUser(username, limit, status,
+					pageable);
 
 			// If no transactions are found, return 204 No Content
 			if (transactions.isEmpty() || transactions == null) {

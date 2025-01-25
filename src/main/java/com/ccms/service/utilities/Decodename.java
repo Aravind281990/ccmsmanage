@@ -7,6 +7,19 @@ import org.springframework.stereotype.Component;
 
 import com.ccms.service.exception.InvalidUsernameException;
 
+/**
+ * Utility class to decode Base64-encoded usernames.
+ * <p>
+ * This class provides a method to decode a Base64-encoded username. It performs several validation checks 
+ * before decoding, including verifying that the username is not null or empty, does not exceed the maximum 
+ * allowed length, and ensures that the Base64 string is correctly padded. If any of the validation checks fail, 
+ * an appropriate exception is thrown. If the Base64 decoding fails, it also logs the error and throws a custom 
+ * exception.
+ * </p>
+ * 
+ * @see InvalidUsernameException
+ */
+
 @Component
 public class Decodename {
 
@@ -44,7 +57,7 @@ public class Decodename {
 
 	// Ensure Base64 padding is valid for decoding
 	
-	private String ensureBase64Padding(String encodedUsername) {
+	public String ensureBase64Padding(String encodedUsername) {
 		int paddingLength = encodedUsername.length() % 4;
 		if (paddingLength == 2) {
 			return encodedUsername + "==";

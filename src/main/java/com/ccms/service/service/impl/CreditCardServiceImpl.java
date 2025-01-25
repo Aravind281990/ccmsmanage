@@ -3,12 +3,14 @@ package com.ccms.service.service.impl;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import com.ccms.service.exception.CreditCardNotFoundException;
 import com.ccms.service.exception.CreditCardProcessingException;
 import com.ccms.service.exception.CustomerNotFoundException;
@@ -22,6 +24,11 @@ import com.ccms.service.service.CreditCardService;
 import com.ccms.service.utilities.CreditCardEnDecryption;
 import com.ccms.service.utilities.CreditCardFormatter;
 
+/**
+ * Implementation of the {@link CreditCardService} interface. This service handles operations related to credit card management
+ * for users, including retrieving credit card details, adding new credit cards, validating card information, and toggling card status.
+ */
+
 @Service
 public class CreditCardServiceImpl implements CreditCardService {
 
@@ -31,13 +38,14 @@ public class CreditCardServiceImpl implements CreditCardService {
 	private CustomerRepository customerRepository;
 
 	@Autowired
-	CreditCardRepository creditCardRepository;
+	private CreditCardRepository creditCardRepository;
+	
+	@Autowired
+	private CreditCardEnDecryption cardEnDecryption;
 
 	@Autowired
-	CreditCardEnDecryption cardEnDecryption;
-
-	@Autowired
-	CreditCardFormatter cardFormatter;
+	private CreditCardFormatter cardFormatter;
+	  
 
 	@Override
 	public CreditCard getCreditCardForUser(String username, boolean showFullNumber) {
@@ -163,7 +171,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 	@Override
 	public boolean toggleCreditCardStatus(String username, int creditCardId) {
-
+        
 		CreditCard creditCard = creditCardRepository.findByUsername1(username);
 
 		if (creditCard == null) {
@@ -198,7 +206,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 		return creditcards;
 	}
-
+    
 	private void validateCreditCardDetail(CreditCardDetail creditCardDetail) {
 
 		// Validate credit card number (basic length check)
@@ -210,6 +218,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 		if (creditCardDetail.getExpiryMonth() < 1 || creditCardDetail.getExpiryMonth() > 12) {
 			throw new IllegalArgumentException("Invalid expiry month");
 		}
+		
 
 		if (creditCardDetail.getExpiryYear() < LocalDate.now().getYear()) {
 			throw new IllegalArgumentException("Expiry year must be greater than or equal to current year");
@@ -220,6 +229,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 			throw new IllegalArgumentException("Expiry date is in the past");
 		}
 
+            
 		// Validate CVV
 		if (creditCardDetail.getCvv() < 100 || creditCardDetail.getCvv() > 999) {
 			throw new IllegalArgumentException("Invalid CVV");
