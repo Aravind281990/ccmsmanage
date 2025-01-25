@@ -1,15 +1,13 @@
 package com.ccms.service.service.impl;
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.ccms.service.exception.CreditCardNotFoundException;
 import com.ccms.service.exception.CreditCardProcessingException;
@@ -34,7 +32,9 @@ import com.ccms.service.utilities.CreditCardFormatter;
 public class CreditCardServiceImpl implements CreditCardService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CreditCardServiceImpl.class);
-	 private static final String NO_CREDIT_CARD_FOUND_MESSAGE = "No credit card found for username: ";
+	private static final String NO_CREDIT_CARD_FOUND_MESSAGE = "No credit card found for username: ";
+	private static final String ENABLED ="enabled";
+	private static final String DISABLED ="disabled";
 
 	@Autowired
 	public CustomerRepository customerRepository;
@@ -150,9 +150,9 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 		if (creditCardDetail.getCreditCardId() == 0) { // assuming int type, adjust as per your design
 			
-			Random random = new Random();
+			SecureRandom secureRandom = new SecureRandom();
 
-			int generatedId = random.nextInt(999999) + 1; 
+			int generatedId = secureRandom.nextInt(999999) + 1; 
 			
 		     // If for some reason the ID is still invalid, throw an InvalidRandomOperationException
 			
@@ -192,7 +192,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 		return creditCard.getCreditcards().stream().filter(card -> card.getCreditCardId() == creditCardId).findFirst()
 				.map(card -> {
-					card.setStatus(card.getStatus().equals("enabled") ? "disabled" : "enabled");
+					card.setStatus(card.getStatus().equals(ENABLED) ? DISABLED : ENABLED);
 					creditCardRepository.save(creditCard);
 					return true;
 				}).orElseThrow(() -> new CreditCardNotFoundException("Credit card not found for ID: " + creditCardId));
@@ -254,7 +254,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 		}
 
 		// Validate status (basic example)
-		if (!creditCardDetail.getStatus().equals("enabled") && !creditCardDetail.getStatus().equals("disabled")) {
+		if (!creditCardDetail.getStatus().equals(ENABLED) && !creditCardDetail.getStatus().equals(DISABLED)) {
 			throw new IllegalArgumentException("Status must be either 'enabled' or 'disabled'");
 		}
 

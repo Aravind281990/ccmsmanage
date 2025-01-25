@@ -30,6 +30,7 @@ com/ccms/service/exception/TransactionNotFoundException.class
 com/ccms/service/utilities/AccessLogFilter.class
 com/ccms/service/exception/DuplicateCreditCardException.class
 com/ccms/service/utilities/ErrorResponse.class
+com/ccms/service/exception/InvalidRandomOperationException.class
 com/ccms/service/model/CreditCard.class
 com/ccms/service/utilities/CreditCardFormatter.class
 com/ccms/service/utilities/SuccessResponse.class

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreditCardServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CcmsService</a> &gt; <a href="index.source.html" class="el_package">com.ccms.service.service.impl</a> &gt; <span class="el_source">CreditCardServiceImpl.java</span></div><h1>CreditCardServiceImpl.java</h1><pre class="source lang-java linenums">package com.ccms.service.service.impl;
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.ccms.service.exception.CreditCardNotFoundException;
 import com.ccms.service.exception.CreditCardProcessingException;
@@ -31,10 +29,12 @@ import com.ccms.service.utilities.CreditCardFormatter;
  */
 
 @Service
-<span class="fc" id="L34">public class CreditCardServiceImpl implements CreditCardService {</span>
+<span class="fc" id="L32">public class CreditCardServiceImpl implements CreditCardService {</span>
 
-<span class="fc" id="L36">	private static final Logger logger = LoggerFactory.getLogger(CreditCardServiceImpl.class);</span>
-	 private static final String NO_CREDIT_CARD_FOUND_MESSAGE = &quot;No credit card found for username: &quot;;
+<span class="fc" id="L34">	private static final Logger logger = LoggerFactory.getLogger(CreditCardServiceImpl.class);</span>
+	private static final String NO_CREDIT_CARD_FOUND_MESSAGE = &quot;No credit card found for username: &quot;;
+	private static final String ENABLED =&quot;enabled&quot;;
+	private static final String DISABLED =&quot;disabled&quot;;
 
 	@Autowired
 	public CustomerRepository customerRepository;
@@ -150,9 +150,9 @@ import com.ccms.service.utilities.CreditCardFormatter;
 
 <span class="nc bnc" id="L151" title="All 2 branches missed.">		if (creditCardDetail.getCreditCardId() == 0) { // assuming int type, adjust as per your design</span>
 			
-<span class="nc" id="L153">			Random random = new Random();</span>
+<span class="nc" id="L153">			SecureRandom secureRandom = new SecureRandom();</span>
 
-<span class="nc" id="L155">			int generatedId = random.nextInt(999999) + 1; </span>
+<span class="nc" id="L155">			int generatedId = secureRandom.nextInt(999999) + 1; </span>
 			
 		     // If for some reason the ID is still invalid, throw an InvalidRandomOperationException
 			
@@ -192,7 +192,7 @@ import com.ccms.service.utilities.CreditCardFormatter;
 
 <span class="pc bpc" id="L193" title="1 of 2 branches missed.">		return creditCard.getCreditcards().stream().filter(card -&gt; card.getCreditCardId() == creditCardId).findFirst()</span>
 <span class="fc" id="L194">				.map(card -&gt; {</span>
-<span class="pc bpc" id="L195" title="1 of 2 branches missed.">					card.setStatus(card.getStatus().equals(&quot;enabled&quot;) ? &quot;disabled&quot; : &quot;enabled&quot;);</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">					card.setStatus(card.getStatus().equals(ENABLED) ? DISABLED : ENABLED);</span>
 <span class="fc" id="L196">					creditCardRepository.save(creditCard);</span>
 <span class="fc" id="L197">					return true;</span>
 <span class="fc" id="L198">				}).orElseThrow(() -&gt; new CreditCardNotFoundException(&quot;Credit card not found for ID: &quot; + creditCardId));</span>
@@ -254,7 +254,7 @@ import com.ccms.service.utilities.CreditCardFormatter;
 		}
 
 		// Validate status (basic example)
-<span class="nc bnc" id="L257" title="All 4 branches missed.">		if (!creditCardDetail.getStatus().equals(&quot;enabled&quot;) &amp;&amp; !creditCardDetail.getStatus().equals(&quot;disabled&quot;)) {</span>
+<span class="nc bnc" id="L257" title="All 4 branches missed.">		if (!creditCardDetail.getStatus().equals(ENABLED) &amp;&amp; !creditCardDetail.getStatus().equals(DISABLED)) {</span>
 <span class="nc" id="L258">			throw new IllegalArgumentException(&quot;Status must be either 'enabled' or 'disabled'&quot;);</span>
 		}
 

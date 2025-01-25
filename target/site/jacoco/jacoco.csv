@@ -30,7 +30,7 @@ CcmsService,com.ccms.service.exception,InvalidUsernameException,0,4,0,0,0,2,0,1,
 CcmsService,com.ccms.service.exception,TransactionNotFoundException,0,5,0,0,0,2,0,1,0,1
 CcmsService,com.ccms.service.exception,DuplicateCreditCardException,0,4,0,0,0,2,0,1,0,1
 CcmsService,com.ccms.service.service.impl,CreditCardServiceImpl,353,114,51,9,73,23,32,10,3,9
-CcmsService,com.ccms.service.service.impl,CustomerServiceimpl,5,8,0,0,3,2,3,2,3,2
+CcmsService,com.ccms.service.service.impl,CustomerServiceimpl,0,8,0,0,0,2,0,2,0,2
 CcmsService,com.ccms.service.service.impl,TransactionServiceimpl,1066,180,80,2,231,27,67,3,25,3
 CcmsService,com.ccms.service.controller,CustomerController,0,71,0,2,0,17,0,4,0,3
 CcmsService,com.ccms.service.controller,CreditCardController,156,163,1,5,33,33,1,9,0,7

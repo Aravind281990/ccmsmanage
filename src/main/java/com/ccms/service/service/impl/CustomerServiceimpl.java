@@ -19,27 +19,9 @@ public class CustomerServiceimpl implements CustomerService {
 	private CustomerRepository customerRepository;
 
 	@Override
-	public Customer addCustomer(Customer customer) {
-
-		return null;
-	}
-
-	@Override
 	public Customer getCustomer(String username) {
 
 		return customerRepository.findByUsername(username);
-
-	}
-
-	@Override
-	public Customer updateCustomer(Customer customer) {
-
-		return null;
-	}
-
-	@Override
-	public void deleteCustomer(String username) {
-
 
 	}
 
