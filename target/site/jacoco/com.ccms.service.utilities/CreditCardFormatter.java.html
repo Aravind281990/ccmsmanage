@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 	// Method to mask the credit card number (show only last 4 digits)
 	public String maskCreditCardNumber(String creditCardNumber) {
 		// Remove all non-numeric characters (e.g., spaces or dashes)
-<span class="fc" id="L26">		String numericCardNumber = creditCardNumber.replaceAll(&quot;[^0-9]&quot;, &quot;&quot;);</span>
+<span class="fc" id="L26">		String numericCardNumber = creditCardNumber.replaceAll(&quot;\\D&quot;, &quot;&quot;);</span>
 
 		// Check for valid card length (16 digits)
 <span class="fc bfc" id="L29" title="All 2 branches covered.">		if (numericCardNumber.length() != 16) {</span>
@@ -38,17 +38,15 @@ import org.springframework.stereotype.Component;
 	public String unmaskCreditCardNumber(String maskedCardNumber) {
 		// Remove all non-numeric characters (e.g., spaces or dashes)
 		
-<span class="fc" id="L41">		String numericCardNumber = maskedCardNumber.replaceAll(&quot;[^0-9]&quot;, &quot;&quot;);</span>
+<span class="fc" id="L41">		String numericCardNumber = maskedCardNumber.replaceAll(&quot;\\D&quot;, &quot;&quot;);</span>
 		
 		// Check that the number is 16 digits
 <span class="fc bfc" id="L44" title="All 2 branches covered.">		if (numericCardNumber.length() != 16) {</span>
 <span class="fc" id="L45">			throw new IllegalArgumentException(&quot;Invalid masked card number length.&quot;);</span>
 		}
 		
-<span class="fc" id="L48">	    String unmaskedCardNumber = numericCardNumber.replaceAll(&quot;(\\d{4})(\\d{4})(\\d{4})(\\d{4})&quot;, &quot;$1-$2-$3-$4&quot;);</span>
+<span class="fc" id="L48">		  return numericCardNumber.replaceAll(&quot;(\\d{4})(\\d{4})(\\d{4})(\\d{4})&quot;, &quot;$1-$2-$3-$4&quot;);</span>
 
-		// Return the full unmasked card number
-<span class="fc" id="L51">		return unmaskedCardNumber;</span>
 	}
 
 }

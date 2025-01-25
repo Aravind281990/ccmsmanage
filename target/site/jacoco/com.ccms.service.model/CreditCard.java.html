@@ -32,10 +32,10 @@ import lombok.NoArgsConstructor;
 public class CreditCard {
 
 	@Id
-<span class="fc" id="L35">	public String id;</span>
-<span class="fc" id="L36">	public String username;</span>
-<span class="fc" id="L37">	public String nameOnTheCard;</span>
-<span class="fc" id="L38">	public List&lt;CreditCardDetail&gt; creditcards;</span>
+<span class="fc" id="L35">	private String id;</span>
+<span class="fc" id="L36">	private String username;</span>
+<span class="fc" id="L37">	private String nameOnTheCard;</span>
+<span class="fc" id="L38">	private List&lt;CreditCardDetail&gt; creditcards;</span>
 
 	/**
 	 * Inner class representing the detailed information of a specific credit card.
@@ -52,13 +52,13 @@ public class CreditCard {
 
 		// @JsonIgnore
 		@Schema(hidden = true)
-<span class="fc" id="L55">		public int creditCardId;</span>
-<span class="fc" id="L56">		public String creditCardNumber;</span>
-<span class="fc" id="L57">		public int expiryMonth;</span>
-<span class="fc" id="L58">		public int expiryYear;</span>
-<span class="fc" id="L59">		public int cvv;</span>
-<span class="fc" id="L60">		public String wireTransactionVendor;</span>
-<span class="fc" id="L61">		public String status;</span>
+<span class="fc" id="L55">		private int creditCardId;</span>
+<span class="fc" id="L56">		private String creditCardNumber;</span>
+<span class="fc" id="L57">		private int expiryMonth;</span>
+<span class="fc" id="L58">		private int expiryYear;</span>
+<span class="fc" id="L59">		private int cvv;</span>
+<span class="fc" id="L60">		private String wireTransactionVendor;</span>
+<span class="fc" id="L61">		private String status;</span>
 	}
 
 }

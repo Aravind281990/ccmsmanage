@@ -1,5 +1,7 @@
 package com.ccms.service.kafka;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TransactionKafkaConsumer {
+	
+	private static final Logger logger = LoggerFactory.getLogger(TransactionKafkaConsumer.class);
 
 	/**
 	 * Listens for incoming messages from the "transaction-log-topic" Kafka topic.
@@ -33,6 +37,6 @@ public class TransactionKafkaConsumer {
 
 		// Process the incoming transaction log message
 
-		System.out.println("Received transaction logs: " + message);
+		logger.info("Received transaction logs: " + message);
 	}
 }

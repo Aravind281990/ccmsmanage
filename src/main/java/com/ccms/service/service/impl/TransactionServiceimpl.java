@@ -64,6 +64,10 @@ import com.ccms.service.utilities.CreditCardFormatter;
 public class TransactionServiceimpl implements TransactionService {
 
 	private static final Logger logger = LoggerFactory.getLogger(TransactionServiceimpl.class);
+	
+	private static final String CREDITCARDS_TRANSACTIONS = "creditcards.transactions";
+	private static final String TOTAL_COUNT = "totalCount";
+
 
 	@Autowired
 	public CustomerRepository customerRepository;
@@ -92,8 +96,8 @@ public class TransactionServiceimpl implements TransactionService {
 																															// the
 																															// username
 				Aggregation.unwind("creditcards"), // Unwind the creditcards array
-				Aggregation.unwind("creditcards.transactions"), // Unwind the transactions array within creditcards
-				Aggregation.project("creditcards.creditCardId", "creditcards.transactions")
+				Aggregation.unwind(CREDITCARDS_TRANSACTIONS), // Unwind the transactions array within creditcards
+				Aggregation.project("creditcards.creditCardId", CREDITCARDS_TRANSACTIONS)
 						.and("creditcards.creditCardId").as("creditCardId") // Map creditCardId
 						.and("creditcards.transactions.transactionId").as("transactionId") // Map transactionId
 						.and("creditcards.transactions.transactionDate").as("transactionDate") // Map transactionDate
@@ -102,7 +106,7 @@ public class TransactionServiceimpl implements TransactionService {
 						.and("creditcards.transactions.transactionAmount").as("transactionAmount") // Map
 																									// transactionAmount
 						.and("creditcards.transactions.transactionDesc").as("transactionDesc") // Map transactionDesc
-						.and("creditcards.transactions").as("transactionDetail"), // Include entire transaction details
+						.and(CREDITCARDS_TRANSACTIONS).as("transactionDetail"), // Include entire transaction details
 				Aggregation.sort(Sort.by(Sort.Order.desc("transactionDate"))), // Sort by transaction date
 				Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()), // Skip the already seen
 																							// items
@@ -119,7 +123,7 @@ public class TransactionServiceimpl implements TransactionService {
 		// Create the count aggregation to count the total number of matching records
 		Aggregation countAggregation = Aggregation.newAggregation(
 				Aggregation.match(Criteria.where("username").is(username)), Aggregation.unwind("creditcards"),
-				Aggregation.unwind("creditcards.transactions"), Aggregation.count().as("totalCount") // Automatically
+				Aggregation.unwind(CREDITCARDS_TRANSACTIONS), Aggregation.count().as(TOTAL_COUNT) // Automatically
 																										// counts the
 																										// number of
 																										// matching
@@ -131,7 +135,7 @@ public class TransactionServiceimpl implements TransactionService {
 
 		// Retrieve the total count from the map (it will be in the "totalCount" field)
 		Map<String, Integer> countMap = countResults.getUniqueMappedResult();
-		Integer totalCount = (countMap != null && countMap.containsKey("totalCount")) ? countMap.get("totalCount") : 0;
+		Integer totalCount = (countMap != null && countMap.containsKey(TOTAL_COUNT)) ? countMap.get(TOTAL_COUNT) : 0;
 
 		// Convert Integer to Long
 		Long total = totalCount.longValue(); // Convert to Long if necessary

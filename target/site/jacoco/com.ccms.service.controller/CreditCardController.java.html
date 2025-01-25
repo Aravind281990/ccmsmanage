@@ -54,6 +54,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 <span class="fc" id="L55">	private static final Logger logger = LoggerFactory.getLogger(CreditCardController.class);</span>
 
+	private static final String NOT_FOUND = &quot;Not Found&quot;;
+	private static final String INTERNAL_SERVER_ERROR = &quot;Internal Server Error&quot;;
+	private static final String BAD_REQUEST = &quot;Bad Request&quot;;
+<span class="fc" id="L60">	private static final String FAILURE =&quot;failure&quot;;</span>
+
+	
 	@Autowired
 	private CreditCardService creditCardService;
 
@@ -69,7 +75,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 	 * such as credit card addition, deletion, or updates.
 	 */
 
-<span class="fc" id="L72">	Map&lt;String, Object&gt; jsonLogMap = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L78">	Map&lt;String, Object&gt; jsonLogMap = new LinkedHashMap&lt;&gt;();</span>
 
 	/**
 	 * Retrieves all credit cards for a given customer.
@@ -87,31 +93,31 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 	public ResponseEntity&lt;Object&gt; getCreditCardsForUser(@PathVariable(&quot;username&quot;) String encodedusername,
 			@RequestParam boolean showFullNumber) {
 
-<span class="fc" id="L90">		String username = decodeUsername(encodedusername);</span>
+<span class="fc" id="L96">		String username = decodeUsername(encodedusername);</span>
 
 		try {
 
-<span class="fc" id="L94">			CreditCard creditCards = creditCardService.getCreditCardForUser(username, showFullNumber);</span>
+<span class="fc" id="L100">			CreditCard creditCards = creditCardService.getCreditCardForUser(username, showFullNumber);</span>
 
-<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (creditCards == null) {</span>
-<span class="fc" id="L97">				return createErrorResponse(HttpStatus.NOT_FOUND, &quot;Not Found&quot;,</span>
-						&quot;No credit cards found for user: &quot; + username);
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (creditCards == null) {</span>
+<span class="fc" id="L103">				return createErrorResponse(HttpStatus.NOT_FOUND, NOT_FOUND,</span>
+<span class="fc" id="L104">						&quot;No credit cards found for user: &quot; + username);</span>
 			}
 
-<span class="fc" id="L101">			return ResponseEntity.ok(creditCards);</span>
+<span class="fc" id="L107">			return ResponseEntity.ok(creditCards);</span>
 
-<span class="nc" id="L103">		} catch (CreditCardNotFoundException e) {</span>
-<span class="nc" id="L104">			logger.error(&quot;An error occurred while fetching the credit cards&quot;, e);</span>
+<span class="nc" id="L109">		} catch (CreditCardNotFoundException e) {</span>
+<span class="nc" id="L110">			logger.error(&quot;An error occurred while fetching the credit cards&quot;, e);</span>
 
-<span class="nc" id="L106">			return createErrorResponse(HttpStatus.NOT_FOUND, &quot;Not Found&quot;,</span>
-					&quot;No credit cards found for user: &quot; + username);
+<span class="nc" id="L112">			return createErrorResponse(HttpStatus.NOT_FOUND, NOT_FOUND,</span>
+<span class="nc" id="L113">					&quot;No credit cards found for user: &quot; + username);</span>
 
 		}
 
-<span class="nc" id="L111">		catch (Exception e) {</span>
-<span class="nc" id="L112">			logger.error(&quot;An error occurred while fetching the credit cards&quot;, e);</span>
-<span class="nc" id="L113">			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, &quot;Internal Server Error&quot;,</span>
-<span class="nc" id="L114">					&quot;An error occurred while fetching the credit cards: &quot; + e.getMessage());</span>
+<span class="nc" id="L117">		catch (Exception e) {</span>
+<span class="nc" id="L118">			logger.error(&quot;An error occurred while fetching the credit cards&quot;, e);</span>
+<span class="nc" id="L119">			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR,</span>
+<span class="nc" id="L120">					&quot;An error occurred while fetching the credit cards: &quot; + e.getMessage());</span>
 		}
 	}
 
@@ -130,63 +136,63 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 	public ResponseEntity&lt;Object&gt; addCreditCard(@PathVariable(&quot;username&quot;) String encodedusername,
 			@RequestBody CreditCard.CreditCardDetail creditCardDetail) {
 
-<span class="fc" id="L133">		String username = decodeUsername(encodedusername);</span>
+<span class="fc" id="L139">		String username = decodeUsername(encodedusername);</span>
 
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">		if (creditCardDetail == null) {</span>
-<span class="nc" id="L136">			return createErrorResponse(HttpStatus.BAD_REQUEST, &quot;Bad Request&quot;, &quot;Credit card details cannot be null&quot;);</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">		if (creditCardDetail == null) {</span>
+<span class="nc" id="L142">			return createErrorResponse(HttpStatus.BAD_REQUEST, BAD_REQUEST, &quot;Credit card details cannot be null&quot;);</span>
 		}
 
 		try {
 
-<span class="fc" id="L141">			CreditCardDetail updatedCreditCard = creditCardService.addCreditCard(username, creditCardDetail);</span>
+<span class="fc" id="L147">			CreditCardDetail updatedCreditCard = creditCardService.addCreditCard(username, creditCardDetail);</span>
 
 			// Log the success to Kafka
-<span class="fc" id="L144">			String message = &quot;Credit card added successfully&quot;;</span>
+<span class="fc" id="L150">			String message = &quot;Credit card added successfully&quot;;</span>
 
-<span class="fc" id="L146">			CreditCardLogUtil.logCreditCard(jsonLogMap, &quot;success&quot;, message, username,</span>
-<span class="fc" id="L147">					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);</span>
+<span class="fc" id="L152">			CreditCardLogUtil.logCreditCard(jsonLogMap, &quot;success&quot;, message, username,</span>
+<span class="fc" id="L153">					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);</span>
 
-<span class="fc" id="L149">			return ResponseEntity.status(HttpStatus.CREATED).body(updatedCreditCard);</span>
+<span class="fc" id="L155">			return ResponseEntity.status(HttpStatus.CREATED).body(updatedCreditCard);</span>
 
-<span class="nc" id="L151">		} catch (IllegalArgumentException ex) {</span>
+<span class="nc" id="L157">		} catch (IllegalArgumentException ex) {</span>
 
-<span class="nc" id="L153">			logger.error(&quot;Error occurred while adding credit card for user: {}, Credit Card ID: {}&quot;, username,</span>
-<span class="nc" id="L154">					creditCardDetail.getCreditCardId(), ex);</span>
+<span class="nc" id="L159">			logger.error(&quot;Error occurred while adding credit card for user: {}, Credit Card ID: {}&quot;, username,</span>
+<span class="nc" id="L160">					creditCardDetail.getCreditCardId(), ex);</span>
 
-<span class="nc" id="L156">			String message = &quot;Error occurred while adding the credit card -&gt; &quot; + ex.getMessage();</span>
+<span class="nc" id="L162">			String message = &quot;Error occurred while adding the credit card -&gt; &quot; + ex.getMessage();</span>
 
-<span class="nc" id="L158">			CreditCardLogUtil.logCreditCard(jsonLogMap, &quot;failure&quot;, message, username,</span>
-<span class="nc" id="L159">					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);</span>
+<span class="nc" id="L164">			CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username,</span>
+<span class="nc" id="L165">					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);</span>
 
-<span class="nc" id="L161">			return createErrorResponse(HttpStatus.BAD_REQUEST, &quot;Bad Request&quot;, ex.getMessage());</span>
+<span class="nc" id="L167">			return createErrorResponse(HttpStatus.BAD_REQUEST, &quot;Bad Request&quot;, ex.getMessage());</span>
 		}
 
-<span class="fc" id="L164">		catch (DuplicateCreditCardException ex) {</span>
+<span class="fc" id="L170">		catch (DuplicateCreditCardException ex) {</span>
 
-<span class="fc" id="L166">			logger.error(&quot;Credit card already exist and associated with this user: {}, Credit Card ID: {}&quot;, username,</span>
-<span class="fc" id="L167">					creditCardDetail.getCreditCardId(), ex);</span>
+<span class="fc" id="L172">			logger.error(&quot;Credit card already exist and associated with this user: {}, Credit Card ID: {}&quot;, username,</span>
+<span class="fc" id="L173">					creditCardDetail.getCreditCardId(), ex);</span>
 
-<span class="fc" id="L169">			String message = &quot;Credit card already exist and associated with this user -&gt; &quot; + ex.getMessage();</span>
+<span class="fc" id="L175">			String message = &quot;Credit card already exist and associated with this user -&gt; &quot; + ex.getMessage();</span>
 
-<span class="fc" id="L171">			CreditCardLogUtil.logCreditCard(jsonLogMap, &quot;failure&quot;, message, username,</span>
-<span class="fc" id="L172">					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);</span>
+<span class="fc" id="L177">			CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username,</span>
+<span class="fc" id="L178">					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);</span>
 
-<span class="fc" id="L174">			return createErrorResponse(HttpStatus.BAD_REQUEST, &quot;Bad Request&quot;, ex.getMessage());</span>
+<span class="fc" id="L180">			return createErrorResponse(HttpStatus.BAD_REQUEST, BAD_REQUEST , ex.getMessage());</span>
 
 		}
 
-<span class="nc" id="L178">		catch (Exception e) {</span>
+<span class="nc" id="L184">		catch (Exception e) {</span>
 
-<span class="nc" id="L180">			logger.error(&quot;An unexpected error occurred while adding credit card for user: {}, Credit Card ID: {}&quot;,</span>
-<span class="nc" id="L181">					username, creditCardDetail.getCreditCardId(), e);</span>
+<span class="nc" id="L186">			logger.error(&quot;An unexpected error occurred while adding credit card for user: {}, Credit Card ID: {}&quot;,</span>
+<span class="nc" id="L187">					username, creditCardDetail.getCreditCardId(), e);</span>
 
-<span class="nc" id="L183">			String message = &quot;Error occurred while adding the credit card&quot; + e.getMessage();</span>
+<span class="nc" id="L189">			String message = &quot;Error occurred while adding the credit card&quot; + e.getMessage();</span>
 
-<span class="nc" id="L185">			CreditCardLogUtil.logCreditCard(jsonLogMap, &quot;failure&quot;, message, username,</span>
-<span class="nc" id="L186">					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);</span>
+<span class="nc" id="L191">			CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username,</span>
+<span class="nc" id="L192">					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);</span>
 
-<span class="nc" id="L188">			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, &quot;Internal Server Error&quot;,</span>
-					&quot;An unexpected error occurred&quot;);
+<span class="nc" id="L194">			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR,</span>
+<span class="nc" id="L195">					&quot;An unexpected error occurred&quot;);</span>
 		}
 	}
 
@@ -206,48 +212,48 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 	public ResponseEntity&lt;Object&gt; toggleCreditCardStatus(@PathVariable(&quot;username&quot;) String encodedusername,
 			@PathVariable(&quot;creditCardId&quot;) int creditCardId) {
 
-<span class="fc" id="L209">		String username = decodeUsername(encodedusername);</span>
+<span class="fc" id="L215">		String username = decodeUsername(encodedusername);</span>
 
 		try {
 
-<span class="fc" id="L213">			boolean statusUpdated = creditCardService.toggleCreditCardStatus(username, creditCardId);</span>
+<span class="fc" id="L219">			boolean statusUpdated = creditCardService.toggleCreditCardStatus(username, creditCardId);</span>
 
-<span class="fc bfc" id="L215" title="All 2 branches covered.">			if (!statusUpdated) {</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">			if (!statusUpdated) {</span>
 
-<span class="fc" id="L217">				String message = &quot;Credit card status not toggled -&gt; ID : &quot; + creditCardId + &quot; was not found for user: &quot;</span>
-						+ username;
+<span class="fc" id="L223">				String message = &quot;Credit card status not toggled -&gt; ID : &quot; + creditCardId + &quot; was not found for user: &quot;</span>
+<span class="fc" id="L224">						+ username;</span>
 
-<span class="fc" id="L220">				CreditCardLogUtil.logCreditCard(jsonLogMap, &quot;failure&quot;, message, username, creditCardId,</span>
-						creditCardKafkaProducer);
+<span class="fc" id="L226">				CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username, creditCardId,</span>
+<span class="fc" id="L227">						creditCardKafkaProducer);</span>
 
-<span class="fc" id="L223">				return createErrorResponse(HttpStatus.NOT_FOUND, &quot;Not Found&quot;, message);</span>
+<span class="fc" id="L229">				return createErrorResponse(HttpStatus.NOT_FOUND, NOT_FOUND, message);</span>
 
 			}
 
-<span class="fc" id="L227">			String message = &quot;Credit card status toggled successfully&quot;;</span>
+<span class="fc" id="L233">			String message = &quot;Credit card status toggled successfully&quot;;</span>
 
-<span class="fc" id="L229">			CreditCardLogUtil.logCreditCard(jsonLogMap, &quot;success&quot;, message, username, creditCardId,</span>
-					creditCardKafkaProducer);
+<span class="fc" id="L235">			CreditCardLogUtil.logCreditCard(jsonLogMap, &quot;success&quot;, message, username, creditCardId,</span>
+<span class="fc" id="L236">					creditCardKafkaProducer);</span>
 
-<span class="fc" id="L232">			return ResponseEntity.ok(message);</span>
+<span class="fc" id="L238">			return ResponseEntity.ok(message);</span>
 
-<span class="nc" id="L234">		} catch (CreditCardNotFoundException ex) {</span>
+<span class="nc" id="L240">		} catch (CreditCardNotFoundException ex) {</span>
 
-<span class="nc" id="L236">			String message = &quot;Credit card status not toggled -&gt; ID : &quot; + creditCardId + &quot; was not found for user: &quot;</span>
-					+ username;
+<span class="nc" id="L242">			String message = &quot;Credit card status not toggled -&gt; ID : &quot; + creditCardId + &quot; was not found for user: &quot;</span>
+<span class="nc" id="L243">					+ username;</span>
 
-<span class="nc" id="L239">			CreditCardLogUtil.logCreditCard(jsonLogMap, &quot;failure&quot;, message, username, creditCardId,</span>
-					creditCardKafkaProducer);
+<span class="nc" id="L245">			CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username, creditCardId,</span>
+<span class="nc" id="L246">					creditCardKafkaProducer);</span>
 
-<span class="nc" id="L242">			return createErrorResponse(HttpStatus.NOT_FOUND, &quot;Not Found&quot;, message);</span>
+<span class="nc" id="L248">			return createErrorResponse(HttpStatus.NOT_FOUND, NOT_FOUND, message);</span>
 		}
 
-<span class="nc" id="L245">		catch (Exception e) {</span>
+<span class="nc" id="L251">		catch (Exception e) {</span>
 
-<span class="nc" id="L247">			logger.error(&quot;An error occurred while toggling the credit card status&quot;, e);</span>
+<span class="nc" id="L253">			logger.error(&quot;An error occurred while toggling the credit card status&quot;, e);</span>
 
-<span class="nc" id="L249">			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, &quot;Internal Server Error&quot;,</span>
-<span class="nc" id="L250">					&quot;An error occurred while toggling the credit card status: &quot; + e.getMessage());</span>
+<span class="nc" id="L255">			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR,</span>
+<span class="nc" id="L256">					&quot;An error occurred while toggling the credit card status: &quot; + e.getMessage());</span>
 		}
 	}
 
@@ -257,10 +263,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 	private String decodeUsername(String encodedusername) {
 		try {
-<span class="fc" id="L260">			return decodename.decodeUsername(encodedusername);</span>
-<span class="nc" id="L261">		} catch (InvalidUsernameFormatException e) {</span>
-<span class="nc" id="L262">			logger.error(&quot;Failed to decode username: {}...&quot;, encodedusername.substring(0, 3), e);</span>
-<span class="nc" id="L263">			throw e;</span>
+<span class="fc" id="L266">			return decodename.decodeUsername(encodedusername);</span>
+<span class="nc" id="L267">		} catch (InvalidUsernameFormatException e) {</span>
+<span class="nc" id="L268">			logger.error(&quot;Failed to decode username: {}...&quot;, encodedusername.substring(0, 3), e);</span>
+<span class="nc" id="L269">			throw e;</span>
 		}
 	}
 
@@ -269,7 +275,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 	 */
 
 	private ResponseEntity&lt;Object&gt; createErrorResponse(HttpStatus status, String error, String message) {
-<span class="fc" id="L272">		return ResponseEntity.status(status).body(new ErrorResponse(error, message));</span>
+<span class="fc" id="L278">		return ResponseEntity.status(status).body(new ErrorResponse(error, message));</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

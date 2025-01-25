@@ -87,22 +87,6 @@ public class CreditCardServiceImplTest {
         });
     }
 
-//    @Test
-//    void testAddCreditCard_ValidCard() {
-//        // Valid scenario where the credit card is added successfully
-//        when(customerRepository.findByUsername("testUser")).thenReturn(mockCustomer);
-//        when(creditCardRepository.findByUsername1("testUser")).thenReturn(mockCreditCard);
-//        when(creditCardRepository.save(any(CreditCard.class))).thenReturn(mockCreditCard);
-//
-//        try {
-//            CreditCardDetail result = creditCardService.addCreditCard("testUser", mockCreditCardDetail);
-//            assertNotNull(result);
-//            assertEquals(mockCreditCardDetail.getCreditCardNumber(), result.getCreditCardNumber());
-//        } catch (Exception e) {
-//            fail("Should not throw exception");
-//        }
-//    }
-
     @Test
     void testAddCreditCard_CustomerNotFound() {
         when(customerRepository.findByUsername("testUser")).thenReturn(null);
@@ -111,27 +95,6 @@ public class CreditCardServiceImplTest {
             creditCardService.addCreditCard("testUser", mockCreditCardDetail);
         });
     }
-
-//    @Test
-//    void testAddCreditCard_DuplicateCreditCard() {
-//        // Set the valid expiry date (current month and year or later)
-//        mockCreditCardDetail.setExpiryYear(LocalDate.now().getYear());  // Valid year
-//        mockCreditCardDetail.setExpiryMonth(LocalDate.now().getMonthValue());  // Valid month
-//        
-//        // Set up the mock customer and credit card repositories
-//        when(customerRepository.findByUsername("testUser")).thenReturn(mockCustomer);
-//        
-//        // Mock the credit card repository to return an existing credit card for "testUser"
-//        when(creditCardRepository.findByUsername1("testUser")).thenReturn(mockCreditCard);
-//        
-//        // Add a mock credit card to simulate an existing card for the user
-//        mockCreditCard.getCreditcards().add(mockCreditCardDetail); // Add the card to simulate duplicate
-//        
-//        // Test: Expecting DuplicateCreditCardException due to duplicate card number
-//        assertThrows(DuplicateCreditCardException.class, () -> {
-//            creditCardService.addCreditCard("testUser", mockCreditCardDetail);
-//        });
-//    }
 
     @Test
     void testToggleCreditCardStatus_ValidCard() {

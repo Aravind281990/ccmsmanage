@@ -32,20 +32,20 @@ import lombok.NoArgsConstructor;
 public class Customer {
 
 	@Id
-	public String id;
+	private String id;
 	@NotNull
-	public String username;
-	public String password;
-	public Name name;
-	public String dob;
-	public String sex;
+	private String username;
+	private String password;
+	private Name name;
+	private String dob;
+	private String sex;
 	
 	@Email
-	public String email;
-	public int customerId;
-	public Address address;
-	public boolean active;
-	public Date createdAt;
+	private String email;
+	private int customerId;
+	private Address address;
+	private boolean active;
+	private Date createdAt;
 
     /**
      * Inner class representing the name of the customer.
@@ -59,8 +59,8 @@ public class Customer {
 	@Data
 	public static class Name {
 
-		public String first;
-		public String last;
+		private String first;
+		private String last;
 
 	}
 
@@ -76,12 +76,12 @@ public class Customer {
 	@Data
 	public static class Address {
 
-		public String street;
-		public String city;
-		public String state;
+		private String street;
+		private String city;
+		private String state;
 	    @Min(value = 0, message = "Zip code cannot be negative")
-	    public int zip;
-	    public String country;
+	    private int zip;
+	    private String country;
 	}
 
 }

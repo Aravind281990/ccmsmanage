@@ -32,20 +32,20 @@ import lombok.NoArgsConstructor;
 public class Customer {
 
 	@Id
-<span class="fc" id="L35">	public String id;</span>
+<span class="fc" id="L35">	private String id;</span>
 	@NotNull
-<span class="fc" id="L37">	public String username;</span>
-<span class="fc" id="L38">	public String password;</span>
-<span class="fc" id="L39">	public Name name;</span>
-<span class="fc" id="L40">	public String dob;</span>
-<span class="fc" id="L41">	public String sex;</span>
+<span class="fc" id="L37">	private String username;</span>
+<span class="fc" id="L38">	private String password;</span>
+<span class="fc" id="L39">	private Name name;</span>
+<span class="fc" id="L40">	private String dob;</span>
+<span class="fc" id="L41">	private String sex;</span>
 	
 	@Email
-<span class="fc" id="L44">	public String email;</span>
-<span class="fc" id="L45">	public int customerId;</span>
-<span class="fc" id="L46">	public Address address;</span>
-<span class="fc" id="L47">	public boolean active;</span>
-<span class="fc" id="L48">	public Date createdAt;</span>
+<span class="fc" id="L44">	private String email;</span>
+<span class="fc" id="L45">	private int customerId;</span>
+<span class="fc" id="L46">	private Address address;</span>
+<span class="fc" id="L47">	private boolean active;</span>
+<span class="fc" id="L48">	private Date createdAt;</span>
 
     /**
      * Inner class representing the name of the customer.
@@ -59,8 +59,8 @@ public class Customer {
 <span class="pc bpc" id="L59" title="12 of 22 branches missed.">	@Data</span>
 	public static class Name {
 
-<span class="fc" id="L62">		public String first;</span>
-<span class="fc" id="L63">		public String last;</span>
+<span class="fc" id="L62">		private String first;</span>
+<span class="fc" id="L63">		private String last;</span>
 
 	}
 
@@ -76,12 +76,12 @@ public class Customer {
 <span class="pc bpc" id="L76" title="23 of 40 branches missed.">	@Data</span>
 	public static class Address {
 
-<span class="fc" id="L79">		public String street;</span>
-<span class="fc" id="L80">		public String city;</span>
-<span class="fc" id="L81">		public String state;</span>
+<span class="fc" id="L79">		private String street;</span>
+<span class="fc" id="L80">		private String city;</span>
+<span class="fc" id="L81">		private String state;</span>
 	    @Min(value = 0, message = &quot;Zip code cannot be negative&quot;)
-<span class="fc" id="L83">	    public int zip;</span>
-<span class="fc" id="L84">	    public String country;</span>
+<span class="fc" id="L83">	    private int zip;</span>
+<span class="fc" id="L84">	    private String country;</span>
 	}
 
 }

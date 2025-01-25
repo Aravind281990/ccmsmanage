@@ -1,11 +1,15 @@
 package com.ccms.service.utilities;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
+import com.ccms.service.kafka.AccessLogKafkaConsumer;
 
 /**
  * A listener that performs a health check on application startup by querying the
@@ -22,6 +26,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class HealthCheckListener implements ApplicationListener<ApplicationReadyEvent> {
+	
+	private static final Logger logger = LoggerFactory.getLogger(HealthCheckListener.class);
 	
     @Value("${server.port}")
     private int port;
@@ -40,9 +46,9 @@ public class HealthCheckListener implements ApplicationListener<ApplicationReady
         try {
             RestTemplate restTemplate = new RestTemplate();
             String healthStatus = restTemplate.getForObject(healthCheckUrl, String.class);
-            System.out.println("Health check response on startup: " + healthStatus);
+            logger.info("Health check response on startup: " + healthStatus);
         } catch (Exception e) {
-            System.err.println("Health check failed: " + e.getMessage());
+        	logger.info("Health check failed: " + e.getMessage());
         }
     }
 }

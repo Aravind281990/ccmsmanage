@@ -40,6 +40,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class TransactionController {
 
 	private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
+	
+	 private static final String TRANSACTION_DATE = "transactionDate";
+	 private static final String ERROR = "error";
+	 private static final List<String> VALID_STATUSES = List.of("enabled", "disabled", "both");
+	 private static final String INVALID_STATUS_MESSAGE = "Invalid status value. Valid values are 'enabled', 'disabled', or 'both'";
+	 private static final String INVALID_ARGUMENT_MESSAGE = "Invalid argument provided";
+	 private static final String UNEXPECTED_ERROR_MESSAGE = "An unexpected error occurred. Please try again later";
+	 private static final String LIMIT_PARAMETER_ERROR_MESSAGE = "The 'limit' parameter must be a positive integer greater than 0.";
 
 	@Autowired
 	TransactionService transactionService;
@@ -78,7 +86,7 @@ public class TransactionController {
 		try {
 			// Set pagination details
 
-			Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
+			Pageable pageable = PageRequest.of(page, size, Sort.by(TRANSACTION_DATE).descending());
 
 			// Fetch paginated transactions for the given user
 			Page<TransactionWithCardId> transactions = transactionService.getTransactionsForUser(username, pageable);
@@ -96,8 +104,6 @@ public class TransactionController {
 					transactions.getTotalElements(), "totalPages", transactions.getTotalPages(), "currentPage",
 					transactions.getNumber(), "size", transactions.getSize());
 
-			System.out.println("response" + response);
-
 			return ResponseEntity.ok(response);
 
 		} catch (Exception e) {
@@ -106,8 +112,8 @@ public class TransactionController {
 
 			// Return a 500 Internal Server Error with the exception message
 
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error",
-					List.of(Map.of("error", "An error occurred while fetching transactions: " + e.getMessage()))));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(ERROR,
+					List.of(Map.of(ERROR, "An error occurred while fetching transactions: " + e.getMessage()))));
 		}
 	}
 
@@ -146,10 +152,9 @@ public class TransactionController {
 		}
 
 		// Status validation: Valid statuses are "enabled", "disabled", and "both"
-		List<String> validStatuses = List.of("enabled", "disabled", "both");
-		if (!validStatuses.contains(status)) {
+		if (!VALID_STATUSES.contains(status)) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(List
-					.of(Map.of("error", "Invalid status value. Valid values are 'enabled', 'disabled', or 'both'")));
+					.of(Map.of(ERROR, INVALID_STATUS_MESSAGE)));
 
 		}
 
@@ -157,7 +162,7 @@ public class TransactionController {
 
 			// Set pagination details
 
-			Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
+			Pageable pageable = PageRequest.of(page, size, Sort.by(TRANSACTION_DATE).descending());
 
 			// Fetch max expenses for the last month
 			Page<Map<String, Object>> maxExpenses = transactionService.getMaxExpensesForLastMonth(username, status,
@@ -174,11 +179,11 @@ public class TransactionController {
 
 		} catch (IllegalArgumentException e) {
 
-			return ResponseEntity.badRequest().body(List.of(Map.of("error", "Invalid argument provided")));
+			return ResponseEntity.badRequest().body(List.of(Map.of(ERROR, INVALID_ARGUMENT_MESSAGE)));
 		} catch (Exception e) {
 
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(List.of(Map.of("error", "An unexpected error occurred. Please try again later")));
+					.body(List.of(Map.of(ERROR, UNEXPECTED_ERROR_MESSAGE)));
 		}
 	}
 
@@ -224,7 +229,7 @@ public class TransactionController {
 
 		// Validate the limit to ensure it's a positive integer greater than 0
 		if (limit <= 0) {
-			return buildErrorResponse("The 'limit' parameter must be a positive integer greater than 0.");
+			return buildErrorResponse(LIMIT_PARAMETER_ERROR_MESSAGE);
 		}
 		// Validate amountThreshold
 		if (amountThreshold <= 0) {
@@ -233,9 +238,8 @@ public class TransactionController {
 
 		// Validate status (should be either "enabled", "disabled", or "both")
 
-		List<String> validStatuses = List.of("enabled", "disabled", "both");
-		if (!validStatuses.contains(status)) {
-			return buildErrorResponse("Invalid status value. Valid values are 'enabled', 'disabled', or 'both'");
+		if (!VALID_STATUSES.contains(status)) {
+			return buildErrorResponse(INVALID_STATUS_MESSAGE);
 		}
 
 		try {
@@ -243,7 +247,7 @@ public class TransactionController {
 
 			// Set pagination details
 
-			Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
+			Pageable pageable = PageRequest.of(page, size, Sort.by(TRANSACTION_DATE).descending());
 
 			Map<String, Page<Map<String, String>>> highValueExpenses = transactionService
 					.getHighValueExpensesForUser(username, limit, status, amountThreshold, pageable);
@@ -259,11 +263,11 @@ public class TransactionController {
 
 		} catch (IllegalArgumentException e) {
 			// Log exception if needed
-			return buildErrorResponse("Invalid argument provided");
+			return buildErrorResponse(INVALID_ARGUMENT_MESSAGE);
 		} catch (Exception e) {
 			// Log exception for debugging
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-					Map.of("error", List.of(Map.of("error", "An unexpected error occurred. Please try again later"))));
+					Map.of(ERROR, List.of(Map.of(ERROR, UNEXPECTED_ERROR_MESSAGE))));
 		}
 	}
 
@@ -304,20 +308,19 @@ public class TransactionController {
 
 		// Validate the limit to ensure it's a positive integer greater than 0
 		if (limit <= 0) {
-			return buildErrorResponse("The 'limit' parameter must be a positive integer greater than 0.");
+			return buildErrorResponse(LIMIT_PARAMETER_ERROR_MESSAGE);
 		}
 		// Validate status (should be either "enabled", "disabled", or "both")
 
-		List<String> validStatuses = List.of("enabled", "disabled", "both");
-		if (!validStatuses.contains(status)) {
-			return buildErrorResponse("Invalid status value. Valid values are 'enabled', 'disabled', or 'both'");
+		if (!VALID_STATUSES.contains(status)) {
+			return buildErrorResponse(INVALID_STATUS_MESSAGE);
 		}
 
 		try {
 
 			// Set pagination details
 
-			Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
+			Pageable pageable = PageRequest.of(page, size, Sort.by(TRANSACTION_DATE).descending());
 
 			Map<Integer, Page<TransactionDetail>> transactions = transactionService
 					.getLastXTransactionsForUser(username, limit, status, pageable);
@@ -333,11 +336,11 @@ public class TransactionController {
 		} catch (
 
 		IllegalArgumentException e) {
-			return buildErrorResponse("Invalid argument provided");
+			return buildErrorResponse(INVALID_ARGUMENT_MESSAGE);
 
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("An unexpected error occurred. Please try again later");
+					.body(UNEXPECTED_ERROR_MESSAGE);
 		}
 
 	}
@@ -380,19 +383,18 @@ public class TransactionController {
 
 		// Validate the limit to ensure it's a positive integer greater than 0
 		if (limit <= 0) {
-			return buildErrorResponse("The 'limit' parameter must be a positive integer greater than 0.");
+			return buildErrorResponse(LIMIT_PARAMETER_ERROR_MESSAGE);
 		}
 
 		// Validate status (should be either "enabled", "disabled", or "both")
-		List<String> validStatuses = List.of("enabled", "disabled", "both");
-		if (!validStatuses.contains(status)) {
-			return buildErrorResponse("Invalid status value. Valid values are 'enabled', 'disabled', or 'both'");
+		if (!VALID_STATUSES.contains(status)) {
+			return buildErrorResponse(INVALID_STATUS_MESSAGE);
 		}
 
 		try {
 
 			// Set pagination details
-			Pageable pageable = PageRequest.of(page, size, Sort.by("transactionDate").descending());
+			Pageable pageable = PageRequest.of(page, size, Sort.by(TRANSACTION_DATE).descending());
 
 			// Call the service to get the last X expenses
 			Map<String, Object> transactions = transactionService.getLastXExpensesForUser(username, limit, status,
@@ -408,12 +410,12 @@ public class TransactionController {
 
 		} catch (IllegalArgumentException e) {
 			// Log exception if needed
-			return buildErrorResponse("Invalid argument provided");
+			return buildErrorResponse(INVALID_ARGUMENT_MESSAGE);
 
 		} catch (Exception e) {
 			// Log exception for debugging
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(List.of(Map.of("error", "An unexpected error occurred. Please try again later")));
+					.body(List.of(Map.of(ERROR, UNEXPECTED_ERROR_MESSAGE)));
 		}
 	}
 
@@ -431,7 +433,7 @@ public class TransactionController {
 	// Helper method to standardize error responses
 	private ResponseEntity<?> buildErrorResponse(String errorMessage) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-				.body(Map.of("error", List.of(Map.of("error", errorMessage))));
+				.body(Map.of(ERROR, List.of(Map.of(ERROR, errorMessage))));
 	}
 
 }

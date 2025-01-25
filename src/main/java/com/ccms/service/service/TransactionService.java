@@ -19,8 +19,6 @@ import com.ccms.service.model.TransactionWithCardId;
  */
 
 public interface TransactionService {
-
-//	public Transaction getTransactionsforuser(String username);
 	
 	public Page<TransactionWithCardId> getTransactionsForUser(String username, Pageable pageable);
 	

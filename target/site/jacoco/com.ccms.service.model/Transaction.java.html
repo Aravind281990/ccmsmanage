@@ -28,9 +28,9 @@ import lombok.NoArgsConstructor;
 public class Transaction {
 
 	@Id
-<span class="fc" id="L31">	public String id;</span>
-<span class="fc" id="L32">	public String username;</span>
-<span class="fc" id="L33">	public List&lt;CreditCardTransaction&gt; creditcards;</span>
+<span class="fc" id="L31">	private String id;</span>
+<span class="fc" id="L32">	private String username;</span>
+<span class="fc" id="L33">	private List&lt;CreditCardTransaction&gt; creditcards;</span>
 
 	/**
 	 * Inner class representing credit card transaction data.
@@ -45,8 +45,8 @@ public class Transaction {
 <span class="pc bpc" id="L45" title="8 of 16 branches missed.">	@Data</span>
 	public static class CreditCardTransaction {
 
-<span class="fc" id="L48">		public int creditCardId;</span>
-<span class="fc" id="L49">		public List&lt;TransactionDetail&gt; transactions;</span>
+<span class="fc" id="L48">		private int creditCardId;</span>
+<span class="fc" id="L49">		private List&lt;TransactionDetail&gt; transactions;</span>
 
 	}
 
@@ -63,12 +63,12 @@ public class Transaction {
 <span class="pc bpc" id="L63" title="23 of 42 branches missed.">	@Data</span>
 	public static class TransactionDetail {
 
-<span class="fc" id="L66">		public long transactionId;</span>
-<span class="fc" id="L67">		public String transactionDate;</span>
-<span class="fc" id="L68">		public String transactionTime;</span>
-<span class="fc" id="L69">		public String transactionType; // cr or db</span>
-<span class="fc" id="L70">		public double transactionAmount;</span>
-<span class="fc" id="L71">		public String transactionDesc;</span>
+<span class="fc" id="L66">		private long transactionId;</span>
+<span class="fc" id="L67">		private String transactionDate;</span>
+<span class="fc" id="L68">		private String transactionTime;</span>
+<span class="fc" id="L69">		private String transactionType; // cr or db</span>
+<span class="fc" id="L70">		private double transactionAmount;</span>
+<span class="fc" id="L71">		private String transactionDesc;</span>
 
 	}
 

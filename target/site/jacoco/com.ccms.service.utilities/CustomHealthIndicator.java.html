@@ -30,6 +30,8 @@ import io.micrometer.core.instrument.Tags;
 
 @Component
 <span class="fc" id="L32">public class CustomHealthIndicator implements HealthIndicator {</span>
+	
+    private static final String STATUS = &quot;status&quot;;
 
     @Autowired MeterRegistry meterRegistry;
 
@@ -39,28 +41,28 @@ import io.micrometer.core.instrument.Tags;
 
     @Override
     public Health health() {
-<span class="fc" id="L42">        boolean systemIsHealthy = checkSystemHealth();</span>
+<span class="fc" id="L44">        boolean systemIsHealthy = checkSystemHealth();</span>
 
         // Update health status in the MeterRegistry using a tag for &quot;status&quot;
-<span class="fc bfc" id="L45" title="All 2 branches covered.">        String healthStatus = systemIsHealthy ? &quot;UP&quot; : &quot;DOWN&quot;;</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        String healthStatus = systemIsHealthy ? &quot;UP&quot; : &quot;DOWN&quot;;</span>
         
         // Set the status using a tag (instead of a simple gauge with 1.0 or 0.0)
-<span class="fc bfc" id="L48" title="All 2 branches covered.">        meterRegistry.gauge(HEALTH_METRIC_NAME, Tags.of(&quot;status&quot;, healthStatus), systemIsHealthy ? 1 : 0);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        meterRegistry.gauge(HEALTH_METRIC_NAME, Tags.of(STATUS, healthStatus), systemIsHealthy ? 1 : 0);</span>
 
-<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (systemIsHealthy) {</span>
-<span class="fc" id="L51">            return Health.up().withDetail(&quot;status&quot;, &quot;UP&quot;).build();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (systemIsHealthy) {</span>
+<span class="fc" id="L53">            return Health.up().withDetail(STATUS, &quot;UP&quot;).build();</span>
         } else {
-<span class="fc" id="L53">            return Health.down().withDetail(&quot;status&quot;, &quot;DOWN&quot;).build();</span>
+<span class="fc" id="L55">            return Health.down().withDetail(STATUS, &quot;DOWN&quot;).build();</span>
         }
     }
 
     private boolean checkSystemHealth() {
         try {
             // Example: check if the MongoDB connection is up
-<span class="fc" id="L60">            mongoTemplate.executeCommand(&quot;{ ping: 1 }&quot;);</span>
-<span class="fc" id="L61">            return true; // MongoDB is reachable</span>
-<span class="fc" id="L62">        } catch (Exception e) {</span>
-<span class="fc" id="L63">            return false; // MongoDB is not reachable</span>
+<span class="fc" id="L62">            mongoTemplate.executeCommand(&quot;{ ping: 1 }&quot;);</span>
+<span class="fc" id="L63">            return true; // MongoDB is reachable</span>
+<span class="fc" id="L64">        } catch (Exception e) {</span>
+<span class="fc" id="L65">            return false; // MongoDB is not reachable</span>
         }
     }
 }

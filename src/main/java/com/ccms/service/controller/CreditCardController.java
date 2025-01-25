@@ -54,6 +54,12 @@ public class CreditCardController {
 
 	private static final Logger logger = LoggerFactory.getLogger(CreditCardController.class);
 
+	private static final String NOT_FOUND = "Not Found";
+	private static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
+	private static final String BAD_REQUEST = "Bad Request";
+	private static final String FAILURE ="failure";
+
+	
 	@Autowired
 	private CreditCardService creditCardService;
 
@@ -94,7 +100,7 @@ public class CreditCardController {
 			CreditCard creditCards = creditCardService.getCreditCardForUser(username, showFullNumber);
 
 			if (creditCards == null) {
-				return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found",
+				return createErrorResponse(HttpStatus.NOT_FOUND, NOT_FOUND,
 						"No credit cards found for user: " + username);
 			}
 
@@ -103,14 +109,14 @@ public class CreditCardController {
 		} catch (CreditCardNotFoundException e) {
 			logger.error("An error occurred while fetching the credit cards", e);
 
-			return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found",
+			return createErrorResponse(HttpStatus.NOT_FOUND, NOT_FOUND,
 					"No credit cards found for user: " + username);
 
 		}
 
 		catch (Exception e) {
 			logger.error("An error occurred while fetching the credit cards", e);
-			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR,
 					"An error occurred while fetching the credit cards: " + e.getMessage());
 		}
 	}
@@ -133,7 +139,7 @@ public class CreditCardController {
 		String username = decodeUsername(encodedusername);
 
 		if (creditCardDetail == null) {
-			return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", "Credit card details cannot be null");
+			return createErrorResponse(HttpStatus.BAD_REQUEST, BAD_REQUEST, "Credit card details cannot be null");
 		}
 
 		try {
@@ -155,7 +161,7 @@ public class CreditCardController {
 
 			String message = "Error occurred while adding the credit card -> " + ex.getMessage();
 
-			CreditCardLogUtil.logCreditCard(jsonLogMap, "failure", message, username,
+			CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username,
 					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);
 
 			return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());
@@ -168,10 +174,10 @@ public class CreditCardController {
 
 			String message = "Credit card already exist and associated with this user -> " + ex.getMessage();
 
-			CreditCardLogUtil.logCreditCard(jsonLogMap, "failure", message, username,
+			CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username,
 					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);
 
-			return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());
+			return createErrorResponse(HttpStatus.BAD_REQUEST, BAD_REQUEST , ex.getMessage());
 
 		}
 
@@ -182,10 +188,10 @@ public class CreditCardController {
 
 			String message = "Error occurred while adding the credit card" + e.getMessage();
 
-			CreditCardLogUtil.logCreditCard(jsonLogMap, "failure", message, username,
+			CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username,
 					creditCardDetail.getCreditCardId(), creditCardKafkaProducer);
 
-			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR,
 					"An unexpected error occurred");
 		}
 	}
@@ -217,10 +223,10 @@ public class CreditCardController {
 				String message = "Credit card status not toggled -> ID : " + creditCardId + " was not found for user: "
 						+ username;
 
-				CreditCardLogUtil.logCreditCard(jsonLogMap, "failure", message, username, creditCardId,
+				CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username, creditCardId,
 						creditCardKafkaProducer);
 
-				return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", message);
+				return createErrorResponse(HttpStatus.NOT_FOUND, NOT_FOUND, message);
 
 			}
 
@@ -236,17 +242,17 @@ public class CreditCardController {
 			String message = "Credit card status not toggled -> ID : " + creditCardId + " was not found for user: "
 					+ username;
 
-			CreditCardLogUtil.logCreditCard(jsonLogMap, "failure", message, username, creditCardId,
+			CreditCardLogUtil.logCreditCard(jsonLogMap, FAILURE, message, username, creditCardId,
 					creditCardKafkaProducer);
 
-			return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", message);
+			return createErrorResponse(HttpStatus.NOT_FOUND, NOT_FOUND, message);
 		}
 
 		catch (Exception e) {
 
 			logger.error("An error occurred while toggling the credit card status", e);
 
-			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
+			return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR,
 					"An error occurred while toggling the credit card status: " + e.getMessage());
 		}
 	}

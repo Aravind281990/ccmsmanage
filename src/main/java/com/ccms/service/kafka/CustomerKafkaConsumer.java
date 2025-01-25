@@ -1,5 +1,7 @@
 package com.ccms.service.kafka;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Service;
 @Service
 @EnableKafka
 public class CustomerKafkaConsumer {
+	
+	private static final Logger logger = LoggerFactory.getLogger(CustomerKafkaConsumer.class);
 
 	/**
 	 * Listens for messages from the "customer-log-topic" Kafka topic and processes
@@ -37,6 +41,6 @@ public class CustomerKafkaConsumer {
 
 		// Log or process the customer-related message (e.g., saving to a database)
 
-		System.out.println("Received customer logs: " + message);
+		logger.info("Received customer logs: " + message);
 	}
 }

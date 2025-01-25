@@ -211,20 +211,6 @@ class TransactionTest {
         assertNotEquals(transaction1.hashCode(), transaction2.hashCode(), "The hash codes should differ when the objects are unequal");
     }
     
-//    @Test
-//    void testToString1() {
-//        // Arrange
-//        Transaction.TransactionDetail transactionDetail = new Transaction.TransactionDetail(1001L, "2025-01-25", "10:00:00", "cr", 100.50, "Payment");
-//        Transaction.CreditCardTransaction creditCardTransaction = new Transaction.CreditCardTransaction(123, Arrays.asList(transactionDetail));
-//        Transaction transaction = new Transaction("1", "user1", Arrays.asList(creditCardTransaction));
-//
-//        // Act
-//        String result = transaction.toString();
-//
-//        // Assert
-//        assertTrue(result.contains("creditcards=[CreditCardTransaction{creditCardId=123"), "The toString() method should include credit card transaction details");
-//        assertTrue(result.contains("TransactionDetail{transactionId=1001"), "The toString() method should include transaction details");
-//    }
 
     @Test
     void testSetIdAndSetUsername() {
@@ -240,17 +226,6 @@ class TransactionTest {
         assertEquals("user123", transaction.getUsername());
     }
 
-//    @Test
-//    void testTransactionConstructor() {
-//        // Create a Transaction object using the no-argument constructor
-//        Transaction transaction = new Transaction();
-//
-//        // Assert that the object is instantiated and has default values (null or empty lists)
-//        assertNotNull(transaction);
-//        assertNull(transaction.getId());
-//        assertNull(transaction.getUsername());
-//        assertTrue(transaction.getCreditcards().isEmpty());
-//    }
 
     @Test
     void testCanEqual1() {

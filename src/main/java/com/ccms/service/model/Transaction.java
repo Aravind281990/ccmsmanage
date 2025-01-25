@@ -28,9 +28,9 @@ import lombok.NoArgsConstructor;
 public class Transaction {
 
 	@Id
-	public String id;
-	public String username;
-	public List<CreditCardTransaction> creditcards;
+	private String id;
+	private String username;
+	private List<CreditCardTransaction> creditcards;
 
 	/**
 	 * Inner class representing credit card transaction data.
@@ -45,8 +45,8 @@ public class Transaction {
 	@Data
 	public static class CreditCardTransaction {
 
-		public int creditCardId;
-		public List<TransactionDetail> transactions;
+		private int creditCardId;
+		private List<TransactionDetail> transactions;
 
 	}
 
@@ -63,12 +63,12 @@ public class Transaction {
 	@Data
 	public static class TransactionDetail {
 
-		public long transactionId;
-		public String transactionDate;
-		public String transactionTime;
-		public String transactionType; // cr or db
-		public double transactionAmount;
-		public String transactionDesc;
+		private long transactionId;
+		private String transactionDate;
+		private String transactionTime;
+		private String transactionType; // cr or db
+		private double transactionAmount;
+		private String transactionDesc;
 
 	}
 

@@ -30,6 +30,8 @@ import io.micrometer.core.instrument.Tags;
 
 @Component
 public class CustomHealthIndicator implements HealthIndicator {
+	
+    private static final String STATUS = "status";
 
     @Autowired MeterRegistry meterRegistry;
 
@@ -45,12 +47,12 @@ public class CustomHealthIndicator implements HealthIndicator {
         String healthStatus = systemIsHealthy ? "UP" : "DOWN";
         
         // Set the status using a tag (instead of a simple gauge with 1.0 or 0.0)
-        meterRegistry.gauge(HEALTH_METRIC_NAME, Tags.of("status", healthStatus), systemIsHealthy ? 1 : 0);
+        meterRegistry.gauge(HEALTH_METRIC_NAME, Tags.of(STATUS, healthStatus), systemIsHealthy ? 1 : 0);
 
         if (systemIsHealthy) {
-            return Health.up().withDetail("status", "UP").build();
+            return Health.up().withDetail(STATUS, "UP").build();
         } else {
-            return Health.down().withDetail("status", "DOWN").build();
+            return Health.down().withDetail(STATUS, "DOWN").build();
         }
     }
 

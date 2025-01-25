@@ -119,36 +119,6 @@ public class CustomerTest {
         assertEquals("", customer.getName().getLast());
     }
 
-//    // Test Case 5: Invalid Zip Code
-//    @Test
-//    void testInvalidZipCode() {
-//        Customer.Name name = new Customer.Name("John", "Doe");
-//        Customer.Address address = new Customer.Address("123 Main St", "Anytown", "CA", -12345, "USA"); // Invalid zip
-//        
-//        Customer customer = new Customer(
-//            "1",
-//            "johndoe",
-//            "password123",
-//            name,
-//            "1990-01-01",
-//            "M",
-//            "johndoe@example.com",
-//            1001,
-//            address,
-//            true,
-//            new Date()
-//        );
-//
-//        // Run the validation
-//        Set<ConstraintViolation<Customer>> violations = validator.validate(customer);
-//
-//        // Assert that there is at least one violation
-//        assertFalse(violations.isEmpty(), "Expected validation violations but found none.");
-//        
-//        // Ensure the zip field specifically contains a violation
-//        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Zip code cannot be negative")));
-//    }
-
     // Test Case 6: Customer with Inactive Status
     @Test
     void testInactiveCustomer() {

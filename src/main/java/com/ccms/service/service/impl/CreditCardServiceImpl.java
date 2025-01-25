@@ -33,6 +33,7 @@ import com.ccms.service.utilities.CreditCardFormatter;
 public class CreditCardServiceImpl implements CreditCardService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CreditCardServiceImpl.class);
+	 private static final String NO_CREDIT_CARD_FOUND_MESSAGE = "No credit card found for username: ";
 
 	@Autowired
 	public CustomerRepository customerRepository;
@@ -60,7 +61,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 		if (creditcards == null) {
 			// Handle case where no credit card was found for the given user
-			throw new CreditCardNotFoundException("No credit card found for username: " + username);
+			throw new CreditCardNotFoundException(NO_CREDIT_CARD_FOUND_MESSAGE + username);
 		}
 
 		List<CreditCardDetail> activecreditcards = creditcards.getCreditcards();
@@ -175,7 +176,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 		CreditCard creditCard = creditCardRepository.findByUsername1(username);
 
 		if (creditCard == null) {
-			throw new CreditCardNotFoundException("No credit card found for username: " + username);
+			throw new CreditCardNotFoundException(NO_CREDIT_CARD_FOUND_MESSAGE + username);
 		}
 
 		return creditCard.getCreditcards().stream().filter(card -> card.getCreditCardId() == creditCardId).findFirst()
@@ -201,7 +202,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 		if (creditcards == null) {
 
-			throw new CreditCardNotFoundException("No credit card found for username: " + username);
+			throw new CreditCardNotFoundException(NO_CREDIT_CARD_FOUND_MESSAGE + username);
 		}
 
 		return creditcards;

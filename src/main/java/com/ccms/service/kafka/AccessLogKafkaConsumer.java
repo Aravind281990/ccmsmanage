@@ -1,7 +1,11 @@
 package com.ccms.service.kafka;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import com.ccms.service.controller.TransactionController;
 
 /**
  * Service to consume access logs from a Kafka topic and process the messages.
@@ -15,6 +19,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccessLogKafkaConsumer {
+	
+	
+	private static final Logger logger = LoggerFactory.getLogger(AccessLogKafkaConsumer.class);
 
 	/**
 	 * Kafka listener method that listens to messages on the "access-logs" topic.
@@ -37,6 +44,6 @@ public class AccessLogKafkaConsumer {
 		// Log the received message to the console (can be replaced with actual
 		// processing logic)
 
-		System.out.println("Received access logs: " + message);
+		logger.info("Received access logs: " + message);
 	}
 }

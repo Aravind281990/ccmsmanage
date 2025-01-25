@@ -18,10 +18,9 @@ import org.springframework.web.filter.CorsFilter;
 <span class="fc" id="L18">        config.addAllowedOrigin(&quot;*&quot;);</span>
 <span class="fc" id="L19">        config.addAllowedHeader(&quot;*&quot;);</span>
 <span class="fc" id="L20">        config.addAllowedMethod(&quot;*&quot;);</span>
-        // config.setAllowCredentials(true);
 
-<span class="fc" id="L23">        source.registerCorsConfiguration(&quot;/**&quot;, config);</span>
-<span class="fc" id="L24">        return new CorsFilter(source);</span>
+<span class="fc" id="L22">        source.registerCorsConfiguration(&quot;/**&quot;, config);</span>
+<span class="fc" id="L23">        return new CorsFilter(source);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

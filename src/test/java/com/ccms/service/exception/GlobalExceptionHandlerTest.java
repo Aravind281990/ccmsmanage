@@ -23,18 +23,6 @@ public class GlobalExceptionHandlerTest {
                 .build();
     }
 
-//    @Test
-//    public void testHandleInvalidUsernameException() throws Exception {
-//        String username = "invalidUser";
-//        String errorMessage = "Invalid username";
-//
-//        // Simulate the InvalidUsernameException
-//        mockMvc.perform(get("/test-invalid-username")
-//                .param("username", username))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.message").value("Invalid username"))
-//                .andExpect(jsonPath("$.details").value(errorMessage));
-//    }
 
     @Test
     public void testHandleDuplicateCreditCardException() throws Exception {

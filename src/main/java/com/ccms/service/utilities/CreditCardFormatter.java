@@ -23,7 +23,7 @@ public class CreditCardFormatter {
 	// Method to mask the credit card number (show only last 4 digits)
 	public String maskCreditCardNumber(String creditCardNumber) {
 		// Remove all non-numeric characters (e.g., spaces or dashes)
-		String numericCardNumber = creditCardNumber.replaceAll("[^0-9]", "");
+		String numericCardNumber = creditCardNumber.replaceAll("\\D", "");
 
 		// Check for valid card length (16 digits)
 		if (numericCardNumber.length() != 16) {
@@ -38,17 +38,15 @@ public class CreditCardFormatter {
 	public String unmaskCreditCardNumber(String maskedCardNumber) {
 		// Remove all non-numeric characters (e.g., spaces or dashes)
 		
-		String numericCardNumber = maskedCardNumber.replaceAll("[^0-9]", "");
+		String numericCardNumber = maskedCardNumber.replaceAll("\\D", "");
 		
 		// Check that the number is 16 digits
 		if (numericCardNumber.length() != 16) {
 			throw new IllegalArgumentException("Invalid masked card number length.");
 		}
 		
-	    String unmaskedCardNumber = numericCardNumber.replaceAll("(\\d{4})(\\d{4})(\\d{4})(\\d{4})", "$1-$2-$3-$4");
+		  return numericCardNumber.replaceAll("(\\d{4})(\\d{4})(\\d{4})(\\d{4})", "$1-$2-$3-$4");
 
-		// Return the full unmasked card number
-		return unmaskedCardNumber;
 	}
 
 }

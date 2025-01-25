@@ -11,11 +11,11 @@ import com.ccms.service.model.Customer;
 
 public interface CustomerService {
 
-	public Customer addCustomer(Customer Customer);
+	public Customer addCustomer(Customer customer);
 
 	public Customer getCustomer(String username);
 
-	public Customer updateCustomer(Customer Customer);
+	public Customer updateCustomer(Customer customer);
 
 	public void deleteCustomer(String username);
 

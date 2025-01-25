@@ -19,8 +19,8 @@ public class CustomerServiceimpl implements CustomerService {
 	private CustomerRepository customerRepository;
 
 	@Override
-	public Customer addCustomer(Customer Customer) {
-		// TODO Auto-generated method stub
+	public Customer addCustomer(Customer customer) {
+
 		return null;
 	}
 
@@ -32,14 +32,14 @@ public class CustomerServiceimpl implements CustomerService {
 	}
 
 	@Override
-	public Customer updateCustomer(Customer Customer) {
-		// TODO Auto-generated method stub
+	public Customer updateCustomer(Customer customer) {
+
 		return null;
 	}
 
 	@Override
 	public void deleteCustomer(String username) {
-		// TODO Auto-generated method stub
+
 
 	}
 

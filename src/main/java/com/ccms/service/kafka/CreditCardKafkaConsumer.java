@@ -1,5 +1,7 @@
 package com.ccms.service.kafka;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CreditCardKafkaConsumer {
 
+	private static final Logger logger = LoggerFactory.getLogger(CreditCardKafkaConsumer.class);
 	 /**
      * Kafka listener that listens for messages on the "creditcard-log-topic" topic.
      * The consumer group is "credit-card-consumer-group".
@@ -32,6 +35,6 @@ public class CreditCardKafkaConsumer {
         // Log or process the incoming credit card log message
         // For example, you could persist this data to a database
     	
-        System.out.println("Received creditcard logs: " + message);
+    	logger.info("Received creditcard logs: " + message);
     }
 }
